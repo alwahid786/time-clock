@@ -203,6 +203,23 @@
 </head>
 
 <body>
+    @php
+    function convertMinutesToTime($minutes) {
+    $hours = floor($minutes / 60);
+    $remainingMinutes = $minutes % 60;
+
+    $time = '';
+    if ($hours > 0) {
+    $time = "$hours hrs ";
+    }
+
+    if ($remainingMinutes > 0) {
+    $time .= "$remainingMinutes mins";
+    }
+
+    return $time;
+    }
+    @endphp
     @include('super-admin.layouts.sidebar')
     <div class="container-fluid px-0">
         <div class="bg-blue" style="height: 60px;padding-left: 80px;">
@@ -212,7 +229,7 @@
                     <h4 style="line-height: 0.8;" class="m-0 text-white">Generate</h4>
                 </div>
                 <div class="d-flex align-items-center ml-auto mr-3" style="height: 60px;">
-                    <button class="add_user_btn" data-toggle="modal" data-target="#generateReportForm"><i class="fa-solid fa-file-alt mr-3"></i> Generate Report</button>
+                    <button class="add_user_btn" data-toggle="modal" data-target="#generateReportForm"><i class="fa-solid fa-file-alt mr-3"></i> Generate PDF</button>
                 </div>
             </div>
         </div>
@@ -222,11 +239,24 @@
         <div class="row">
             <div class="col-12 mt-4">
                 <div class="card p-3">
+                    @if(isset($groupedClocks))
+                    @foreach($groupedClocks as $key => $user)
+
+                    <?php
+                    $totalHours = 0;
+                    $min = 0;
+                    foreach ($user as $date) {
+                        foreach ($date['clocks'] as $clock) {
+                            $min = $min + $clock['minutes'];
+                        }
+                    }
+                    $totalHours = $min + $totalHours;
+                    ?>
                     <div>
                         <div class="d-flex align-items-center justify-content-between table-header px-2">
-                            <h5 class="m-0"><strong>Wahid Ahmad</strong></h5>
+                            <h5 class="m-0"><strong>{{$key}}</strong></h5>
                             <div class="d-flex flex-column align-items-end">
-                                <div style="line-height: 1; color: #17a2b8;font-size:18px;">123 hrs 43 mins</div><small><strong>12/02/24 - 12/03/24</strong></small>
+                                <div style="line-height: 1; color: #17a2b8;font-size:18px;">{{convertMinutesToTime($totalHours)}}</div><small><strong>12/02/24 - 12/03/24</strong></small>
                             </div>
                         </div>
                         <table class="table">
@@ -240,28 +270,45 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach($user as $key=>$date)
                                 <tr>
                                     <td class="d-flex flex-column">
-                                        <div style="line-height: 0.8;">Dec 29, 2023</div><small style="color: #17a2b8;">Wednesday</small>
+                                        <div style="line-height: 0.8;">{{date('M d, Y', strtotime($key))}}</div><small style="color: #17a2b8;">{{date('l', strtotime($key))}}</small>
                                     </td>
                                     <td>
                                         <div class="d-flex flex-column justify-content-center ">
-                                            <div>10:25:46 AM</div>
-                                            <div>10:25:46 AM</div>
-                                            <div>10:25:46 AM</div>
+                                            @php
+                                            $shifts = 0;
+                                            @endphp
+                                            @foreach($date['clocks'] as $clock)
+                                            @if($clock['type'] == 'clock-in')
+                                            @php $shifts++ @endphp
+                                            <div>{{date('h:i:s a', strtotime($clock['time']))}}</div>
+                                            @endif
+                                            @endforeach
+
                                         </div>
                                     </td>
                                     <td>
                                         <div class="d-flex flex-column justify-content-center ">
-                                            <div>10:25:46 AM</div>
-                                            <div>10:25:46 AM</div>
-                                            <div>10:25:46 AM</div>
+                                            @php
+                                            $minutes=0;
+                                            @endphp
+                                            @foreach($date['clocks'] as $clock)
+                                            @php
+                                            $minutes = $minutes + $clock['minutes'];
+                                            @endphp
+                                            @if($clock['type'] == 'clock-out')
+                                            <div>{{date('h:i:s a', strtotime($clock['time']))}}</div>
+                                            @endif
+                                            @endforeach
                                         </div>
                                     </td>
-                                    <td>3</td>
-                                    <td><span class="badge badge-success">5 hrs 25 min</span></td>
+                                    <td>{{$shifts}}</td>
+                                    <td><span class="badge badge-success">{{convertMinutesToTime($minutes)}}</span></td>
                                 </tr>
-                                <tr>
+                                @endforeach
+                                <!-- <tr>
                                     <td class="d-flex flex-column">
                                         <div style="line-height: 0.8;">Dec 30, 2023</div><small style="color: #17a2b8;">Thursday</small>
                                     </td>
@@ -279,11 +326,13 @@
                                     </td>
                                     <td>2</td>
                                     <td><span class="badge badge-success">5 hrs 25 min</span></td>
-                                </tr>
+                                </tr> -->
                             </tbody>
                         </table>
                     </div>
-                    <div>
+                    @endforeach
+                    @endif
+                    <!-- <div>
                         <div class="d-flex align-items-center justify-content-between table-header px-2">
                             <h5 class="m-0"><strong>Don Williams</strong></h5>
                             <div class="d-flex flex-column align-items-end">
@@ -324,7 +373,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

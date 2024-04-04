@@ -23,6 +23,7 @@
 
         .bg-blue {
             background-color: #17a2b8;
+            height: 60px;
         }
 
         .card {
@@ -47,8 +48,10 @@
 <body>
     @include('admin.layouts.sidebar')
     <div class="container-fluid px-0">
-        <div class="bg-blue">
-            <h1 class="text-center text-white" >Admin Dashboard</h1>
+        <div class="bg-blue d-flex justify-content-between align-items-center pr-3" style="padding-left:100px;">
+            <h1 class="text-center text-white">Admin Dashboard</h1>
+            <?php $img = env('APP_URL') . auth()->user()->profile_img; ?>
+            <img style="width:40px; height:40px; border-radius:50%;border:1px solid white;" src="{{$img}}" alt="">
         </div>
         <div class="container-fluid my-5" style="padding-left: 80px;">
             <div class="row">
@@ -81,7 +84,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <!-- <tr>
                                     <th scope="row">1</th>
                                     <td class="">Mark</td>
                                     <td><span class="badge badge-success">Clock In</span></td>
@@ -103,7 +106,7 @@
 
                                     <td>Dec 12, 2023 - Wednesday, 12:25:56 PM</td>
                                     <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
-                                </tr>
+                                </tr> -->
                             </tbody>
                         </table>
                     </div>

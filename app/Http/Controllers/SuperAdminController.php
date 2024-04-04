@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Clock;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\UsersImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Carbon;
 
 class SuperAdminController extends Controller
 {
@@ -17,8 +19,87 @@ class SuperAdminController extends Controller
     {
         $users = User::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->count();
         $admins = User::where('user_type', '!=', 'super-admin')->where('user_type', 'admin')->count();
-        return view('super-admin.dashboard', compact('users', 'admins'));
+        $clocks = Clock::whereDate('created_at', Carbon::today())->with('user')->orderby('created_at', 'DESC')->get();
+        return view('super-admin.dashboard', compact('users', 'admins', 'clocks'));
     }
+
+    public function timeLogs(Request $request)
+    {
+        // dd($request->all());
+        $query = Clock::query();
+        if ($request->has('name') && $request->name != '') {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', $request->name);
+            });
+        }
+
+        if ($request->has('email') && $request->email != '') {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('email', $request->email);
+            });
+        }
+
+        if ($request->has('startDate') && $request->startDate != '') {
+            $query->whereDate('created_at', '>=', $request->startDate);
+        }
+
+        if ($request->has('endDate') && $request->endDate != '') {
+            $query->whereDate('created_at', '<=', $request->endDate);
+        }
+        $adminType = auth()->user()->user_type;
+        if ($adminType == 'super-admin') {
+            $users = User::where('user_type', 'user')->get();
+        } else {
+            $users = User::where('user_type', 'user')->where('admin_id', auth()->user()->id)->get();
+        }
+        $clocks = $query->with('user')->orderBy('created_at', 'DESC')->get();
+        return view('super-admin.time-logs', compact('clocks', 'users'));
+    }
+
+    public function generateReport(Request $request)
+    {
+        $query = Clock::query();
+        if ($request->has('reportnames')) {
+            $query->wherein('user_id', $request->reportnames);
+        }
+
+        // if ($request->has('reportemail') && $request->reportemail != null) {
+        //     $query->whereHas('user', function ($q) use ($request) {
+        //         $q->where('email', $request->reportemail);
+        //     });
+        // }
+        if ($request->has('reportstartdate') && $request->reportstartdate != null) {
+            $query->whereDate('created_at', '>=', $request->reportstartdate);
+        }
+
+        if ($request->has('reportenddate') && $request->reportenddate != null) {
+            $query->whereDate('created_at', '<=', $request->reportenddate);
+        }
+        $clocks = $query->with('user')->orderBy('created_at', 'DESC')->get();
+        // Group the clocks by user name and date
+        $groupedClocks = [];
+        foreach ($clocks as $clock) {
+            $userName = $clock->user->name;
+            $date = $clock->created_at->toDateString();
+
+            if (!isset($groupedClocks[$userName])) {
+                $groupedClocks[$userName] = [];
+            }
+
+            if (!isset($groupedClocks[$userName][$date])) {
+                $groupedClocks[$userName][$date] = [
+                    'clocks' => [],
+                    'total_hours' => 0,
+                ];
+            }
+
+            $groupedClocks[$userName][$date]['clocks'][] = $clock;
+        }
+
+        // return $clocks;
+        return view('super-admin.reports', compact('groupedClocks'));
+    }
+
 
     // Get All Users
     public function getAllUsers()
@@ -75,7 +156,13 @@ class SuperAdminController extends Controller
             $errors = $validator->errors()->all();
             return response()->json(['errors' => $errors], 400);
         }
-
+        if ($request->hasFile('img')) {
+            $image = $request->file('img');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('user/images'), $imageName);
+            $profileImg = 'user/images/' . $imageName;
+            $data['profile_img'] = $profileImg;
+        }
         $user = User::find($request->userId);
         $user = $user->update($data);
 

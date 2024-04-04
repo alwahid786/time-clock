@@ -4,6 +4,7 @@
 <head>
     <title>User Dashboard</title>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -12,6 +13,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <style>
+        .loader-overlay {
+            position: fixed;
+            z-index: 999;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffffc9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         body {
             font-family: "Roboto", sans-serif;
         }
@@ -52,9 +64,10 @@
             z-index: 1;
         }
 
-        .userIcon i {
-            font-size: 30px;
-            color: #17a2b8;
+        .userIcon img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
         }
 
         .checkIcon {
@@ -119,10 +132,23 @@
             border: none;
             font-size: 20px;
         }
+
+        .disabledCheckin {
+            background-color: #44a41a75 !important;
+            pointer-events: none !important;
+        }
+
+        .disabledCheckout {
+            background-color: #cc323275 !important;
+            pointer-events: none !important;
+        }
     </style>
 </head>
 
 <body>
+    <div class="loader-overlay d-none">
+        <img src="{{asset('assets/images/loader.gif')}}" alt="">
+    </div>
     @include('users.layouts.sidebar')
     <div class="container-fluid px-0">
         <div class="bg-blue">
@@ -133,7 +159,9 @@
                 <div class="col-12 mt-5">
                     <div class="card p-5 position-relative">
                         <div class="userIcon">
-                            <i class="fas fa-user"></i>
+                            <!-- <i class="fas fa-user"></i> -->
+                            <?php $img = env('APP_URL') . $admin['profile_img']; ?>
+                            <img src="{{$img}}" alt="profile_img">
                         </div>
                         <div class="checkIcon">
                             <i class="fa-solid fa-check"></i>
@@ -148,8 +176,12 @@
                                 <textarea class="borders" style="width: 100%;" name="memo" id="memo" rows="5"></textarea>
                             </div>
                             <div class="checks px-5 my-3">
-                                <button class="checkinBtn py-1" onclick="checkinFunction()">Clock In</button>
-                                <button class="checkoutBtn py-1" onclick="checkoutFunction()">Clock Out</button>
+                                @if($clock != null)
+                                <button class="checkinBtn py-1 <?php echo (isset($clock['type']) && $clock['type'] !== 'clock-in' ? '' : 'disabledCheckin'); ?>" onclick="checkinFunction()">Clock In</button>
+                                @else
+                                <button class="checkinBtn py-1 " onclick="checkinFunction()">Clock In</button>
+                                @endif
+                                <button class="checkoutBtn py-1 <?php echo (isset($clock['type']) && $clock['type'] !== 'clock-out' ? '' : 'disabledCheckout'); ?>" onclick="checkoutFunction()">Clock Out</button>
                             </div>
                         </div>
                     </div>
@@ -195,18 +227,91 @@
         setInterval(displayCurrentDateTime, 1000); // Update every second
 
         function checkinFunction() {
-            Swal.fire({
-                title: "Success!",
-                text: "Your checkin is applied",
-                icon: "success"
+            $('.loader-overlay').removeClass('d-none');
+            const memo = $('#memo').val();
+            const type = 'Clock-in'
+            $.ajax({
+                url: `{{url('/clock')}}`,
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    type: type,
+                    memo: memo
+                },
+                success: function(response) {
+                    $('.loader-overlay').addClass('d-none');
+                    // Handle successful login
+                    // Redirect or show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: type + " applied successfully!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    $('.loader-overlay').addClass('d-none');
+                    // Handle login errors
+                    let errorMessage = 'Something is wrong.';
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        html: errorMessage
+                    });
+                }
             });
+
         }
 
         function checkoutFunction() {
-            Swal.fire({
-                title: "Success!",
-                text: "Your checkout is applied",
-                icon: "error"
+            $('.loader-overlay').removeClass('d-none');
+            const memo = $('#memo').val();
+            const type = 'Clock-out'
+            $.ajax({
+                url: `{{url('/clock')}}`,
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    type: type,
+                    memo: memo
+                },
+                success: function(response) {
+                    $('.loader-overlay').addClass('d-none');
+                    // Handle successful login
+                    // Redirect or show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: type + " applied successfully!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    $('.loader-overlay').addClass('d-none');
+                    // Handle login errors
+                    let errorMessage = 'Something is wrong.';
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        html: errorMessage
+                    });
+                }
             });
         }
     </script>

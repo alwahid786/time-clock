@@ -244,72 +244,27 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @if(isset($clocks))
+                            @foreach($clocks as $clock)
+                            @php
+                            $badge = 'badge-success';
+                            if($clock['type'] == 'clock-out'){
+                            $badge = 'badge-danger';
+                            }
+                            @endphp
                             <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td><span class="badge badge-success">Clock In</span></td>
+                                <th scope="row">{{$clock['user_id']}}</th>
+                                <td>{{$clock['user']['name']}}</td>
+                                <td><span class="badge {{$badge}}">{{$clock['type']}}</span></td>
 
                                 <td class="d-flex flex-column">
-                                    <div style="line-height: 0.8;">Dec 29, 2023</div><small style="color: #17a2b8;">Wednesday</small>
+                                    <div style="line-height: 0.8;">{{ \Carbon\Carbon::parse($clock['time'])->format('M d, Y') }}</div><small style="color: #17a2b8;">{{ \Carbon\Carbon::parse($clock['time'])->format('l') }}</small>
                                 </td>
-                                <td>10:25:46 AM</td>
+                                <td>{{ \Carbon\Carbon::parse($clock['time'])->format('h:i:s A') }}</td>
                                 <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
                             </tr>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td><span class="badge badge-success">Clock In</span></td>
-
-                                <td class="d-flex flex-column">
-                                    <div style="line-height: 0.8;">Dec 29, 2023</div><small style="color: #17a2b8;">Wednesday</small>
-                                </td>
-                                <td>10:25:46 AM</td>
-                                <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td><span class="badge badge-danger">Clock Out</span></td>
-
-                                <td class="d-flex flex-column">
-                                    <div style="line-height: 0.8;">Dec 29, 2023</div><small style="color: #17a2b8;">Wednesday</small>
-                                </td>
-                                <td>10:25:46 AM</td>
-                                <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td><span class="badge badge-success">Clock In</span></td>
-
-                                <td class="d-flex flex-column">
-                                    <div style="line-height: 0.8;">Dec 29, 2023</div><small style="color: #17a2b8;">Wednesday</small>
-                                </td>
-                                <td>10:25:46 AM</td>
-                                <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td><span class="badge badge-success">Clock In</span></td>
-
-                                <td class="d-flex flex-column">
-                                    <div style="line-height: 0.8;">Dec 29, 2023</div><small style="color: #17a2b8;">Wednesday</small>
-                                </td>
-                                <td>10:25:46 AM</td>
-                                <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td><span class="badge badge-danger">Clock Out</span></td>
-
-                                <td class="d-flex flex-column">
-                                    <div style="line-height: 0.8;">Dec 29, 2023</div><small style="color: #17a2b8;">Wednesday</small>
-                                </td>
-                                <td>10:25:46 AM</td>
-                                <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
-                            </tr>
+                            @endforeach
+                            @endif
 
 
                         </tbody>
@@ -358,29 +313,31 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="filterForm" action="{{ route('timeLogs') }}" method="POST">
+                        @csrf
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" placeholder="Enter name">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter email">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
                         </div>
                         <div class="form-group">
                             <label for="startDate">Start Date</label>
-                            <input type="date" class="form-control" id="startDate">
+                            <input type="date" class="form-control" id="startDate" name="startDate">
                         </div>
                         <div class="form-group">
                             <label for="endDate">End Date</label>
-                            <input type="date" class="form-control" id="endDate">
+                            <input type="date" class="form-control" id="endDate" name="endDate">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Apply</button>
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Apply</button>
-                </div>
+
             </div>
         </div>
     </div>
@@ -394,38 +351,38 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <form>
+                <form id="reportForm" action="{{ route('generateReport') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
                         <div class="form-group">
                             <label for="name">Select Users</label>
-                            <select class="form-control w-100" name="names[]" multiple="multiple" id="multiple-names">
-                                <option>Select one or more names</option>
-                                <option value="wahid">Wahid Ahmad</option>
-                                <option value="don">Don Williams</option>
-                                <option value="donald">Donald Trump</option>
-                                <option value="mike">Mike Tyson</option>
+                            <select class="form-control w-100" name="reportnames[]" multiple="multiple" id="multiple-names">
+                                <option disabled>Select one or more names</option>
+                                @if(isset($users) && count($users) > 0)
+                                @foreach($users as $user)
+                                <option value="{{$user['id']}}">{{$user['name']}}</option>
+                                @endforeach
+                                @endif
                             </select>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter email">
-                        </div>
+                            <input type="email" class="form-control" id="email" name="reportemail" placeholder="Enter email">
+                        </div> -->
                         <div class="form-group">
                             <label for="startDate">Start Date</label>
-                            <input type="date" class="form-control" id="startDate">
+                            <input type="date" class="form-control" id="startDate" name="reportstartdate">
                         </div>
                         <div class="form-group">
                             <label for="endDate">End Date</label>
-                            <input type="date" class="form-control" id="endDate">
+                            <input type="date" class="form-control" id="endDate" name="reportenddate">
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <a href="{{route('reports')}}">
-                        <button type="button" class="btn btn-primary">Apply</button>
-                    </a>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Apply</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

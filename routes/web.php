@@ -68,11 +68,13 @@ Route::middleware('user.type:admin')->group(function () {
 });
 Route::middleware('user.type:super-admin')->group(function () {
     Route::prefix('super-admin')->group(function () {
-        Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('superAdminDashboard');
 
-        Route::get('/time-logs', function () {
-            return view('super-admin.time-logs');
-        })->name('timeLogs');
+        Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('superAdminDashboard');
+        Route::any('/time-logs', [SuperAdminController::class, 'timeLogs'])->name('timeLogs');
+        Route::post('/generate-report', [SuperAdminController::class, 'generateReport'])->name('generateReport');
+        // Route::get('/time-logs', function () {
+        //     return view('super-admin.time-logs');
+        // })->name('timeLogs');
         Route::get('/reports', function () {
             return view('super-admin.reports');
         })->name('reports');
@@ -90,8 +92,11 @@ Route::middleware('user.type:super-admin')->group(function () {
 // User Routes
 Route::middleware('user.type:user')->group(function () {
     Route::prefix('user')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('users.dashboard');
-        })->name('userDashboard');
+        // Route::get('/dashboard', function () {
+        //     return view('users.dashboard');
+        // })->name('userDashboard');
+        Route::get('dashboard', [UserController::class, 'userDashboard'])->name('userDashboard');
     });
+    Route::post('clock', [UserController::class, 'applyCLock'])->name('applyClock');
+
 });

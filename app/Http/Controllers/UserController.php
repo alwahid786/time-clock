@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Clock;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserCredentials;
 use App\Mail\ForgotPasswordMail;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -123,13 +126,22 @@ class UserController extends Controller
         }
 
         $adminId = auth()->user()->id;
+        // Handle image upload
+        $profileImg = null;
+        if ($request->hasFile('img')) {
+            $image = $request->file('img');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('user/images'), $imageName);
+            $profileImg = 'user/images/' . $imageName;
+        }
         $user = [
             'name' => $request->first_name . ' ' . $request->last_name,
             'user_type' => $request->user_type,
             'phone' => $request->phone,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'admin_id' => $adminId
+            'admin_id' => $adminId,
+            'profile_img' => $profileImg,
         ];
         $user = User::create($user);
 
@@ -148,5 +160,35 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('loginView');
+    }
+    public function applyCLock(Request $request)
+    {
+        $now = Carbon::now();
+        $clock = new Clock();
+        $clock->user_id = auth()->user()->id;
+        $clock->type = strtolower($request->type);
+        if ($request->type == 'Clock-out') {
+            $previousClockTime = Clock::where('user_id', auth()->user()->id)->where('type', 'clock-in')->orderBy('created_at', 'DESC')->pluck('time')->first();
+            if ($previousClockTime) {
+                $previousClockTime = Carbon::parse($previousClockTime);
+                $clock->minutes = $previousClockTime->diffInMinutes($now);
+            }
+        }
+        if ($request->memo != '' || $request->memo != null) {
+            $clock->memo = $request->memo;
+        }
+        $clock->time = $now;
+        $success = $clock->save();
+        if ($success) {
+            return response()->json("Clock Time Updated Successfully!", 201);
+        } else {
+            return response()->json("Time was not updated! Something went wrong", 500);
+        }
+    }
+    public function userDashboard()
+    {
+        $clock = Clock::where('user_id', auth()->user()->id)->orderBy('created_at', 'DESC')->first();
+        $admin = User::where('id', auth()->user()->admin_id)->first();
+        return view('users.dashboard', compact('clock', 'admin'));
     }
 }

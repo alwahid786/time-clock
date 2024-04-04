@@ -133,6 +133,114 @@
             top: 0;
             opacity: 0;
         }
+
+        /* Image Upload CSS  */
+        .containerr {
+            max-width: 960px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+
+
+        .avatar-upload {
+            position: relative;
+            max-width: 205px;
+            /* margin: 50px auto; */
+        }
+
+        .avatar-upload .avatar-edit {
+            position: absolute;
+            right: 12px;
+            z-index: 1;
+            top: 10px;
+        }
+
+        /* Hide the default file input button */
+        .avatar-upload .avatar-edit input {
+            display: none;
+        }
+
+        /* Style the custom button */
+        .avatar-upload .avatar-edit label {
+            display: inline-block;
+            width: 34px;
+            height: 34px;
+            margin-bottom: 0;
+            border-radius: 100%;
+            background: #FFFFFF;
+            border: 1px solid transparent;
+            box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            font-weight: normal;
+            transition: all .2s ease-in-out;
+            line-height: 32px;
+            /* Center the icon vertically */
+            text-align: center;
+        }
+
+        /* Style the icon inside the custom button */
+        .avatar-upload .avatar-edit label:after {
+            content: "\f040";
+            /* FontAwesome upload icon */
+            font-family: 'FontAwesome';
+            color: #757575;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+        .avatar-upload .avatar-edit+label {
+            display: inline-block;
+            width: 34px;
+            height: 34px;
+            margin-bottom: 0;
+            border-radius: 100%;
+            background: #FFFFFF;
+            border: 1px solid transparent;
+            box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            font-weight: normal;
+            transition: all .2s ease-in-out;
+        }
+
+        .avatar-upload .avatar-edit+label:hover {
+            background: #f1f1f1;
+            border-color: #d6d6d6;
+        }
+
+        .avatar-upload .avatar-edit+label:after {
+            content: "\f040";
+            font-family: 'FontAwesome';
+            color: #757575;
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            margin: auto;
+        }
+
+        .avatar-upload .avatar-preview {
+            width: 192px;
+            height: 192px;
+            position: relative;
+            border-radius: 100%;
+            border: 6px solid #F8F8F8;
+            box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-upload .avatar-preview>div {
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
     </style>
 </head>
 
@@ -157,10 +265,23 @@
                                 <input type="file" id="file" name="file" style="display:none;">
                                 <button type="submit" id="submitBtn" style="display:none;">Import Users</button>
                             </form>
-
                         </div>
                         <form action="#" id="addUserForm">
                             @csrf
+                            @if(request()->input('type') =='admin' )
+                            <div class="containerr">
+                                <div class="avatar-upload">
+                                    <div class="avatar-edit">
+                                        <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
+                                        <label for="imageUpload"></label>
+                                    </div>
+                                    <div class="avatar-preview">
+                                        <div id="imagePreview" style="background-image: url({{asset('assets/images/user.png')}})">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
                             <div class="d-lg-flex align-items-center justify-content-between px-3" style="gap: 10px;">
                                 <div class="w-50">
                                     <label class="m-0" for="first_name">First Name</label>
@@ -337,6 +458,29 @@
                 }
                 $('.loader-overlay').removeClass('d-none');
 
+                // var data = {
+                //     first_name: first_name,
+                //     last_name: last_name,
+                //     email: email,
+                //     phone: phone,
+                //     password: password,
+                //     password_confirmation: password_confirmation,
+                //     user_type: user_type,
+                // }
+                // if (user_type === "admin") {
+                //     data.img = user_type;
+                // }
+                var data = new FormData();
+                data.append('first_name', first_name);
+                data.append('last_name', last_name);
+                data.append('email', email);
+                data.append('phone', phone);
+                data.append('password', password);
+                data.append('password_confirmation', password_confirmation);
+                data.append('user_type', user_type);
+                if (user_type === "admin") {
+                    data.append('img', $('#imageUpload')[0].files[0]);
+                }
                 // Send AJAX request
                 $.ajax({
                     url: `{{url('/add-user')}}`,
@@ -344,15 +488,9 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    data: {
-                        first_name: first_name,
-                        last_name: last_name,
-                        email: email,
-                        phone: phone,
-                        password: password,
-                        password_confirmation: password_confirmation,
-                        user_type: user_type,
-                    },
+                    data: data,
+                    processData: false,
+                    contentType: false,
                     success: function(response) {
                         $('.loader-overlay').addClass('d-none');
                         // Handle successful login
@@ -382,6 +520,21 @@
                     }
                 });
             });
+        });
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+                    $('#imagePreview').hide();
+                    $('#imagePreview').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $("#imageUpload").change(function() {
+            readURL(this);
         });
     </script>
 
