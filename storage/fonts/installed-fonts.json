@@ -1,0 +1,38 @@
+{
+    "lato": {
+        "300": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/lato_300_5a1b3affd6853f9ba40d774b7deb384c",
+        "normal": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/lato_normal_1e76f4095824347c5952fde032e6e608",
+        "bold": "lato_bold_86e1573850012e2276a75106baf0c899"
+    },
+    "font awesome 6 brands": {
+        "normal": "font_awesome_6_brands_normal_5aa91754f1b8ab9921ec65040d0398d7"
+    },
+    "font awesome 6 free": {
+        "normal": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/font_awesome_6_free_normal_8f1c1da98dac9c284cefb97b004bd96e",
+        "900": "font_awesome_6_free_900_85a3b14fbfc79f50bc9c42a8003db748"
+    },
+    "font awesome 5 brands": {
+        "normal": "font_awesome_5_brands_normal_5aa91754f1b8ab9921ec65040d0398d7"
+    },
+    "font awesome 5 free": {
+        "900": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/font_awesome_5_free_900_85a3b14fbfc79f50bc9c42a8003db748",
+        "normal": "font_awesome_5_free_normal_8f1c1da98dac9c284cefb97b004bd96e"
+    },
+    "fontawesome": {
+        "normal": "fontawesome_normal_7a14673ce35632e39e645a3d6f1a41c1"
+    },
+    "roboto": {
+        "100_italic": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_100_italic_71d4fad1ca0f22d70d8be7cc40bb76ab",
+        "300_italic": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_300_italic_3d719d848a0b6b3f4f0918985ffd2db7",
+        "italic": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_italic_e3ef71c7d9eeac822fc7d92d4fc7ff6e",
+        "500_italic": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_500_italic_e69cd621b57d68ed0b47f09bd22a3d7e",
+        "bold_italic": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_bold_italic_76e4a6bfadf19fea9990a367967a3f96",
+        "900_italic": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_900_italic_7ad2e464d2e86e53eea8619bf6734bbe",
+        "100": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_100_1c4e32da7e6c8539dd3a51af38f413be",
+        "300": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_300_32acfcb296f555e063ebba2be7db9e2f",
+        "normal": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_normal_7bc701b343c10631f60048716b96e4f7",
+        "500": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_500_5774d6fb05eba3d096525f821dbe4137",
+        "bold": "C:\\xampp\\htdocs\\time-clock\\storage\\fonts\/roboto_bold_8db5cb5d0586c1e891426d13097b1d04",
+        "900": "roboto_900_7bf41cacaff90e7097ddd49fb9296601"
+    }
+}

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PDFController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,7 +72,9 @@ Route::middleware('user.type:super-admin')->group(function () {
 
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('superAdminDashboard');
         Route::any('/time-logs', [SuperAdminController::class, 'timeLogs'])->name('timeLogs');
-        Route::post('/generate-report', [SuperAdminController::class, 'generateReport'])->name('generateReport');
+        Route::any('/generate-report', [SuperAdminController::class, 'generateReport'])->name('generateReport');
+        Route::any('/generate-pdf', [PDFController::class, 'generatePdf'])->name('generatePdf');
+        Route::any('/manual-entry', [SuperAdminController::class, 'manualEntries'])->name('manualEntries');
         // Route::get('/time-logs', function () {
         //     return view('super-admin.time-logs');
         // })->name('timeLogs');

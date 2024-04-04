@@ -2,8 +2,9 @@
 <html lang="en">
 
 <head>
-    <title>Time Logs</title>
+    <title>Time Reports</title>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -14,6 +15,17 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
+        .loader-overlay {
+            position: fixed;
+            z-index: 999;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffffc9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         body {
             font-family: "Roboto", sans-serif;
         }
@@ -203,6 +215,9 @@
 </head>
 
 <body>
+    <div class="loader-overlay d-none">
+        <img src="{{asset('assets/images/loader.gif')}}" alt="">
+    </div>
     @php
     function convertMinutesToTime($minutes) {
     $hours = floor($minutes / 60);
@@ -229,7 +244,7 @@
                     <h4 style="line-height: 0.8;" class="m-0 text-white">Generate</h4>
                 </div>
                 <div class="d-flex align-items-center ml-auto mr-3" style="height: 60px;">
-                    <button class="add_user_btn" data-toggle="modal" data-target="#generateReportForm"><i class="fa-solid fa-file-alt mr-3"></i> Generate PDF</button>
+                    <button class="add_user_btn" id="generatePDFBtn"><i class="fa-solid fa-file-alt mr-3"></i> Generate PDF</button>
                 </div>
             </div>
         </div>
@@ -256,7 +271,7 @@
                         <div class="d-flex align-items-center justify-content-between table-header px-2">
                             <h5 class="m-0"><strong>{{$key}}</strong></h5>
                             <div class="d-flex flex-column align-items-end">
-                                <div style="line-height: 1; color: #17a2b8;font-size:18px;">{{convertMinutesToTime($totalHours)}}</div><small><strong>12/02/24 - 12/03/24</strong></small>
+                                <div style="line-height: 1; color: #17a2b8;font-size:18px;">{{convertMinutesToTime($totalHours) == '' ? '0 min' : convertMinutesToTime($totalHours)}}</div><small><strong>{{$startDate}} - {{$endDate}}</strong></small>
                             </div>
                         </div>
                         <table class="table">
@@ -305,7 +320,7 @@
                                         </div>
                                     </td>
                                     <td>{{$shifts}}</td>
-                                    <td><span class="badge badge-success">{{convertMinutesToTime($minutes)}}</span></td>
+                                    <td><span class="badge badge-success">{{convertMinutesToTime($minutes) == '' ? '0 min' : convertMinutesToTime($minutes)}}</span></td>
                                 </tr>
                                 @endforeach
                                 <!-- <tr>
@@ -378,117 +393,12 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
-    <div class="modal fade" id="checkDetailsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="user_img text-center">
-                        <img src="{{asset('assets/images/programmer.png')}}" alt="">
-                        <h5 style="color: #17a2b8;"><b>Mervin Holmes</b></h5>
-                    </div>
-                    <hr class="m-1 mt-3">
-                    <div class="d-flex align-items-center justify-content-between px-3">
-                        <h6 class="m-0 text-secondary" style="font-weight: 600;">Type</h6>
-                        <h5 class="m-0"><span class="badge badge-danger">Clock Out</span></h5>
-                    </div>
-                    <hr class="m-1">
-                    <div class="d-flex align-items-center justify-content-between px-3">
-                        <h6 class="m-0 text-secondary" style="font-weight: 600;">Time</h6>
-                        <h5 class="m-0"><b>Wednesday, 12:46:03 PM</b></h5>
-                    </div>
-                    <hr class="m-1 mb-3">
-                    <h6 class="m-0 px-3" style="font-weight: 600; color:#17a2b8">Memo:</h6>
-                    <p class="px-3">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquid assumenda maiores alias dolor adipisci quod laborum unde error quia vero exercitationem voluptate, minus aliquam eos, ex quas? Eos, praesentium corporis.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="FilterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Select Date Range</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" placeholder="Enter name">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter email">
-                        </div>
-                        <div class="form-group">
-                            <label for="startDate">Start Date</label>
-                            <input type="date" class="form-control" id="startDate">
-                        </div>
-                        <div class="form-group">
-                            <label for="endDate">End Date</label>
-                            <input type="date" class="form-control" id="endDate">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Apply</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="generateReportForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #17a2b8;">
-                    <h5 class="modal-title" id="exampleModalCenterTitle" style="color:white"><i class="fas fa-sliders-h mr-3 "></i>Preferences</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="name">Select Users</label>
-                            <select class="form-control w-100" name="names[]" multiple="multiple" id="multiple-names">
-                                <option>Select one or more names</option>
-                                <option value="wahid">Wahid Ahmad</option>
-                                <option value="don">Don Williams</option>
-                                <option value="donald">Donald Trump</option>
-                                <option value="mike">Mike Tyson</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter email">
-                        </div>
-                        <div class="form-group">
-                            <label for="startDate">Start Date</label>
-                            <input type="date" class="form-control" id="startDate">
-                        </div>
-                        <div class="form-group">
-                            <label for="endDate">End Date</label>
-                            <input type="date" class="form-control" id="endDate">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <a href="{{route('reports')}}">
-                        <button type="button" class="btn btn-primary">Apply</button>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <form id="pdfForm" method="POST" action="{{ route('generatePdf') }}" target="_blank">
+        @csrf
+        <input type="hidden" name="reportstartdate" value="{{$startDate}}">
+        <input type="hidden" name="reportenddate" value="{{$endDate}}">
+    </form>
+
 
     <script src="{{asset('assets/js/jquery.min.js')}}"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
@@ -497,6 +407,8 @@
     <script src="{{asset('assets/js/bootstrap.min.js')}}"></script>
     <script src="{{asset('assets/js/main.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function() {
             $('.tabSection a').click(function() {
@@ -523,6 +435,28 @@
                     tags: true
                 });
             });
+        });
+        pdfBtn = document.getElementById('generatePDFBtn');
+        pdfBtn.addEventListener('click', function(e) {
+            // debugger;
+            // $('.loader-overlay').removeClass('d-none');
+            const names = JSON.parse(`{!! json_encode($names) !!}`);
+            const startDate = `{{$startDate}}`;
+            const endDate = `{{$endDate}}`;
+
+            // Add the names to the form
+            if (names != null) {
+                names.forEach(name => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'reportnames[]';
+                    input.value = name;
+                    document.getElementById('pdfForm').appendChild(input);
+                });
+            }
+
+            // Submit the form
+            document.getElementById('pdfForm').submit();
         });
     </script>
 

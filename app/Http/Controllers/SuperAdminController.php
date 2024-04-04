@@ -56,24 +56,36 @@ class SuperAdminController extends Controller
         return view('super-admin.time-logs', compact('clocks', 'users'));
     }
 
+    public function manualEntries()
+    {
+        $adminType = auth()->user()->user_type;
+        if ($adminType == 'super-admin') {
+            $users = User::where('user_type', 'user')->get();
+        } else {
+            $users = User::where('user_type', 'user')->where('admin_id', auth()->user()->id)->get();
+        }
+        return view('super-admin.manual-entry', compact('users'));
+    }
+
     public function generateReport(Request $request)
     {
         $query = Clock::query();
+        $startDate = Clock::orderBy('created_at', 'ASC')->pluck('time')->first();
+        $startDate = date('d/m/Y', strtotime($startDate));
+        $endDate = Carbon::now()->format('d/m/Y');
+        $names = $request->reportnames;
         if ($request->has('reportnames')) {
             $query->wherein('user_id', $request->reportnames);
         }
 
-        // if ($request->has('reportemail') && $request->reportemail != null) {
-        //     $query->whereHas('user', function ($q) use ($request) {
-        //         $q->where('email', $request->reportemail);
-        //     });
-        // }
         if ($request->has('reportstartdate') && $request->reportstartdate != null) {
             $query->whereDate('created_at', '>=', $request->reportstartdate);
+            $startDate = date('d/m/Y', strtotime($request->reportstartdate));
         }
 
         if ($request->has('reportenddate') && $request->reportenddate != null) {
             $query->whereDate('created_at', '<=', $request->reportenddate);
+            $endDate = date('d/m/Y', strtotime($request->reportenddate));
         }
         $clocks = $query->with('user')->orderBy('created_at', 'DESC')->get();
         // Group the clocks by user name and date
@@ -81,23 +93,20 @@ class SuperAdminController extends Controller
         foreach ($clocks as $clock) {
             $userName = $clock->user->name;
             $date = $clock->created_at->toDateString();
-
             if (!isset($groupedClocks[$userName])) {
                 $groupedClocks[$userName] = [];
             }
-
             if (!isset($groupedClocks[$userName][$date])) {
                 $groupedClocks[$userName][$date] = [
                     'clocks' => [],
                     'total_hours' => 0,
                 ];
             }
-
             $groupedClocks[$userName][$date]['clocks'][] = $clock;
         }
 
-        // return $clocks;
-        return view('super-admin.reports', compact('groupedClocks'));
+
+        return view('super-admin.reports', compact('groupedClocks', 'startDate', 'endDate', 'names'));
     }
 
 
