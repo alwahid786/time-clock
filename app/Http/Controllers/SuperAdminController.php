@@ -56,23 +56,19 @@ class SuperAdminController extends Controller
         return view('super-admin.time-logs', compact('clocks', 'users'));
     }
 
-    public function manualEntries()
+    public function manualEntries($clockId)
     {
-        $adminType = auth()->user()->user_type;
-        if ($adminType == 'super-admin') {
-            $users = User::where('user_type', 'user')->get();
-        } else {
-            $users = User::where('user_type', 'user')->where('admin_id', auth()->user()->id)->get();
-        }
-        return view('super-admin.manual-entry', compact('users'));
+        
+        $clock = Clock::find($clockId);
+        return view('super-admin.manual-entry', compact('clock'));
     }
 
     public function generateReport(Request $request)
     {
         $query = Clock::query();
         $startDate = Clock::orderBy('created_at', 'ASC')->pluck('time')->first();
-        $startDate = date('d/m/Y', strtotime($startDate));
-        $endDate = Carbon::now()->format('d/m/Y');
+        $startDate = date('m/d/Y', strtotime($startDate));
+        $endDate = Carbon::now()->format('m/d/Y');
         $names = $request->reportnames;
         if ($request->has('reportnames')) {
             $query->wherein('user_id', $request->reportnames);
@@ -80,12 +76,12 @@ class SuperAdminController extends Controller
 
         if ($request->has('reportstartdate') && $request->reportstartdate != null) {
             $query->whereDate('created_at', '>=', $request->reportstartdate);
-            $startDate = date('d/m/Y', strtotime($request->reportstartdate));
+            $startDate = date('m/d/Y', strtotime($request->reportstartdate));
         }
 
         if ($request->has('reportenddate') && $request->reportenddate != null) {
             $query->whereDate('created_at', '<=', $request->reportenddate);
-            $endDate = date('d/m/Y', strtotime($request->reportenddate));
+            $endDate = date('m/d/Y', strtotime($request->reportenddate));
         }
         $clocks = $query->with('user')->orderBy('created_at', 'DESC')->get();
         // Group the clocks by user name and date

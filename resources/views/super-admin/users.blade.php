@@ -8,162 +8,162 @@
     @include('layouts.header')
     <style>
         body {
-        font-family: "Roboto", sans-serif;
+            font-family: "Roboto", sans-serif;
         }
 
         .roboto-thin {
-        font-weight: 100;
-        font-style: normal;
+            font-weight: 100;
+            font-style: normal;
         }
 
         .bg-blue {
-        background-color: #17a2b8;
+            background-color: #17a2b8;
         }
 
         .card {
-        box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
-        border-radius: 10px;
+            box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+            border-radius: 10px;
         }
 
         .widgets:hover {
-        transform: scale(1.02);
-        transition: transform 0.5s ease;
-        cursor: pointer;
+            transform: scale(1.02);
+            transition: transform 0.5s ease;
+            cursor: pointer;
         }
 
         .closeModalBtn {
-        position: absolute;
-        right: 0;
-        cursor: pointer;
+            position: absolute;
+            right: 0;
+            cursor: pointer;
         }
 
         .search_bar {
-        border: 1px solid gray;
-        padding: 2px 2px 2px 10px;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background-color: white;
+            border: 1px solid gray;
+            padding: 2px 2px 2px 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: white;
         }
 
         .search_bar div {
-        width: 88%;
-        border: none !important;
-        background-color: white;
-        cursor: pointer;
+            width: 88%;
+            border: none !important;
+            background-color: white;
+            cursor: pointer;
         }
 
         .search_bar input:focus,
         .search_bar input:active {
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
         }
 
         .search_bar button {
-        border: none !important;
-        background-color: #17a2b8;
-        color: white;
-        width: 12%;
-        border-radius: 5px;
-        font-size: 20px;
+            border: none !important;
+            background-color: #17a2b8;
+            color: white;
+            width: 12%;
+            border-radius: 5px;
+            font-size: 20px;
         }
 
         .tabSection {
-        border: 1px solid gray;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-        width: fit-content;
-        height: 41px;
+            border: 1px solid gray;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            width: fit-content;
+            height: 41px;
         }
 
 
         .tabSection a {
-        font-size: 16px;
-        padding: 1px 10px;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        color: gray;
+            font-size: 16px;
+            padding: 1px 10px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            color: gray;
         }
 
         .tabSection a.active {
-        background-color: #17a2b8;
-        color: white;
-        font-weight: 600;
-        padding: 1px 10px;
+            background-color: #17a2b8;
+            color: white;
+            font-weight: 600;
+            padding: 1px 10px;
 
         }
 
         .add_user_btn {
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        height: 41px;
-        border: 1px solid #17a2b8;
-        color: #17a2b8;
-        font-size: 16px;
-        padding: 10px;
-        background-color: transparent;
-        transition: background-color 0.3s, color 0.3s;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            height: 41px;
+            border: 1px solid #17a2b8;
+            color: #17a2b8;
+            font-size: 16px;
+            padding: 10px;
+            background-color: transparent;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .add_user_btn:hover {
-        background-color: #17a2b8;
-        color: white;
+            background-color: #17a2b8;
+            color: white;
         }
 
         .tableIcons {
-        border-radius: 5px;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
         }
 
         .editIcon {
-        border: 1px solid orange;
-        background-color: #ffa50021;
-        color: orange;
+            border: 1px solid orange;
+            background-color: #ffa50021;
+            color: orange;
         }
 
         .deleteIcon {
-        border: 1px solid red;
-        background-color: #ff00002e;
-        color: red;
+            border: 1px solid red;
+            background-color: #ff00002e;
+            color: red;
         }
 
         .editIcon:hover {
-        border: 1px solid orange;
-        background-color: #ffa50021;
-        color: orange;
+            border: 1px solid orange;
+            background-color: #ffa50021;
+            color: orange;
         }
 
         .deleteIcon:hover {
-        border: 1px solid red;
-        background-color: #ff00002e;
-        color: red;
+            border: 1px solid red;
+            background-color: #ff00002e;
+            color: red;
         }
 
         table tr td,
         table tr th {
-        vertical-align: middle !important;
-        border: none !important;
+            vertical-align: middle !important;
+            border: none !important;
         }
 
         table tr {
-        border-bottom: 1px solid lightgray !important;
+            border-bottom: 1px solid lightgray !important;
         }
 
         .form-control {
-        padding: 10px;
+            padding: 10px;
         }
-        </style>
+    </style>
 </head>
 
 <body>
@@ -286,6 +286,7 @@
                 $(this).addClass('active');
             });
             new DataTable('#example');
+            $("#dt-search-0").attr('placeholder', 'Search here')
 
         });
     </script>

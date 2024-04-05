@@ -187,12 +187,6 @@
                 <span class="title">Time Logs</span>
             </a>
         </li>
-        <li>
-            <a href="{{route('manualEntries')}}">
-                <span class="icon"><i class="fas fa-user-clock"></i></span>
-                <span class="title">Manual Entry</span>
-            </a>
-        </li>
         <!-- <li>
             <a href="#">
                 <span class="icon"><i class="fas fa-info"></i></span>

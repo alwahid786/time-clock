@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Time Reports</title>
+    <title>PDF - Clock Reports</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <style>
@@ -49,10 +49,31 @@
         td {
             font-weight: normal;
         }
+        table thead, th,
+        table tbody td {
+            border-bottom: 1px solid gray !important;
+        }
     </style>
 </head>
 
 <body>
+    @php
+    function convertMinutesToTime($minutes) {
+    $hours = floor($minutes / 60);
+    $remainingMinutes = $minutes % 60;
+
+    $time = '';
+    if ($hours > 0) {
+    $time = "$hours hrs ";
+    }
+
+    if ($remainingMinutes > 0) {
+    $time .= "$remainingMinutes mins";
+    }
+
+    return $time;
+    }
+    @endphp
     <div class="container-fluid mt-3 mb-5" style="width: 100%;">
         <div class="row">
             <div class="col-12 mt-4">
@@ -72,7 +93,7 @@
                     <div class="table-header" style="display: flex !important; padding:5px 10px">
                         <h2 style="display: flex; justify-content:center;margin:0;">{{ $key }}</h2>
                         <div style="display: flex;justify-content:end; flex-direction:column; align-items:end;color:gray" class="d-flex justify-content-between align-items-center">
-                            <div style="color: #17a2b8;font-size:20px;">{{ $totalHours }} mins</div>
+                            <div style="color: #17a2b8;font-size:20px;">{{convertMinutesToTime($totalHours) == '' ? '0 min' : convertMinutesToTime($totalHours)}}</div>
                             <div>{{ $startDate }} - {{ $endDate }}</div>
                         </div>
                     </div>
@@ -116,7 +137,7 @@
                                 </td>
                                 <td>{{ $shifts }}</td>
                                 <td>
-                                    <div style="color:#28a745; font-weight:600;">{{ $minutes }} mins</div>
+                                    <button style="background-color:#28a745; color:white; padding:2px 3px; border-radius:5px; font-weight:600; font-family:Verdana, Geneva, Tahoma, sans-serif;">{{ $minutes }} mins</button>
                                 </td>
                             </tr>
                             @endforeach

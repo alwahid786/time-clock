@@ -5,14 +5,7 @@
     <title>Time Logs</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    @include('layouts.header')
     <style>
         body {
             font-family: "Roboto", sans-serif;
@@ -129,33 +122,10 @@
             height: 30px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: start;
             font-size: 16px;
         }
 
-        .editIcon {
-            border: 1px solid orange;
-            background-color: #ffa50021;
-            color: orange;
-        }
-
-        .deleteIcon {
-            border: 1px solid red;
-            background-color: #ff00002e;
-            color: red;
-        }
-
-        .editIcon:hover {
-            border: 1px solid orange;
-            background-color: #ffa50021;
-            color: orange;
-        }
-
-        .deleteIcon:hover {
-            border: 1px solid red;
-            background-color: #ff00002e;
-            color: red;
-        }
 
         table tr td,
         table tr th {
@@ -198,6 +168,33 @@
             border: 1px solid rgba(0, 0, 0, 0.1) !important;
             width: 100% !important;
         }
+
+        table.dataTable th.dt-type-numeric {
+            text-align: center !important;
+        }
+
+        .tableIcons {
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .editIcon {
+            border: 1px solid #17a2b8;
+            background-color: #17a2b826;
+            color: #17a2b8 !important;
+            cursor: pointer;
+        }
+
+        .deleteIcon {
+            border: 1px solid orange;
+            background-color: #ffa50021;
+            color: orange;
+        }
     </style>
 </head>
 
@@ -232,7 +229,7 @@
             <div class="col-12 mt-4">
                 <div class="card p-3">
 
-                    <table class="table">
+                    <table class="table" id="timeLogs">
                         <thead>
                             <tr>
                                 <th scope="col" style="border-top-left-radius: 10px;">User ID</th>
@@ -240,6 +237,7 @@
                                 <th scope="col">Type</th>
                                 <th scope="col">Date</th>
                                 <th scope="col">Time</th>
+                                <th scope="col">Memo</th>
                                 <th scope="col" style="border-top-right-radius: 10px;">Action</th>
                             </tr>
                         </thead>
@@ -253,7 +251,7 @@
                             }
                             @endphp
                             <tr>
-                                <th scope="row">{{$clock['user_id']}}</th>
+                                <th>{{$clock['user_id']}}</th>
                                 <td>{{$clock['user']['name']}}</td>
                                 <td><span class="badge {{$badge}}">{{$clock['type']}}</span></td>
 
@@ -261,7 +259,27 @@
                                     <div style="line-height: 0.8;">{{ \Carbon\Carbon::parse($clock['time'])->format('M d, Y') }}</div><small style="color: #17a2b8;">{{ \Carbon\Carbon::parse($clock['time'])->format('l') }}</small>
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($clock['time'])->format('h:i:s A') }}</td>
-                                <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
+                                <td>
+                                    @if($clock['memo'] != null)
+                                    <div id="getMemo" class="d-none">{{$clock['memo']}}</div>
+                                    <div style="width: 150px; ">
+                                        <span style="line-height: 0.8;display: inline-block; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">This is some text for truncation</span>
+                                    </div>
+                                    <a style="line-height: 1; font-size: 14px;" id="viewMemo" data-toggle="modal" data-target="#checkDetailsModal" href="javascript:void">View memo</a>
+                                    @else
+                                    <div class="">- -</div>
+                                    @endif
+                                </td>
+                                <td class="">
+                                    @if($clock['type'] == 'clock-out')
+                                    @php
+                                    $clockId = $clock['id'];
+                                    @endphp
+                                    <a class="tableIcons deleteIcon" href="{{ route('manualEntries', ['clockId' => $clockId])}}"><i class="fa-solid fa-pencil"></i></a>
+                                    @else
+                                    <div class="">- -</div>
+                                    @endif
+                                </td>
                             </tr>
                             @endforeach
                             @endif
@@ -278,7 +296,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-body">
-                    <div class="user_img text-center">
+                    <!-- <div class="user_img text-center">
                         <img src="{{asset('assets/images/programmer.png')}}" alt="">
                         <h5 style="color: #17a2b8;"><b>Mervin Holmes</b></h5>
                     </div>
@@ -292,9 +310,9 @@
                         <h6 class="m-0 text-secondary" style="font-weight: 600;">Time</h6>
                         <h5 class="m-0"><b>Wednesday, 12:46:03 PM</b></h5>
                     </div>
-                    <hr class="m-1 mb-3">
-                    <h6 class="m-0 px-3" style="font-weight: 600; color:#17a2b8">Memo:</h6>
-                    <p class="px-3">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquid assumenda maiores alias dolor adipisci quod laborum unde error quia vero exercitationem voluptate, minus aliquam eos, ex quas? Eos, praesentium corporis.</p>
+                    <hr class="m-1 mb-3"> -->
+                    <h6 class="m-0 px-3 mt-3" style="font-weight: 600; color:#17a2b8">Memo:</h6>
+                    <p class="px-3" id="showMemo">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquid assumenda maiores alias dolor adipisci quod laborum unde error quia vero exercitationem voluptate, minus aliquam eos, ex quas? Eos, praesentium corporis.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -387,24 +405,12 @@
         </div>
     </div>
 
-    <script src="{{asset('assets/js/jquery.min.js')}}"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="{{asset('assets/js/popper.js')}}"></script>
-    <script src="{{asset('assets/js/bootstrap.min.js')}}"></script>
-    <script src="{{asset('assets/js/main.js')}}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    @include('layouts.footer')
     <script>
         $(document).ready(function() {
             $('.tabSection a').click(function() {
                 $('.tabSection a').removeClass('active');
                 $(this).addClass('active');
-            });
-            $('input[name="dates"]').daterangepicker({
-                autoUpdateInput: false,
-                locale: {
-                    cancelLabel: 'Clear'
-                }
             });
 
             $('input[name="dates"]').on('apply.daterangepicker', function(ev, picker) {
@@ -416,10 +422,19 @@
             });
 
             $(document).ready(function() {
-                $('#multiple-names').select2({
-                    tags: true
-                });
+                // $('#multiple-names').select2({
+                //     tags: true
+                // });
+                $("#viewMemo").click(function() {
+                    var memo = $("#getMemo").text();
+                    $("#showMemo").text(memo);
+                })
             });
+
+            new DataTable('#timeLogs');
+            $("#dt-search-0").attr('placeholder', 'Search here')
+
+
         });
     </script>
 

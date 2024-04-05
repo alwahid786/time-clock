@@ -285,6 +285,8 @@
                 $(this).addClass('active');
             });
             new DataTable('#example');
+            $("#dt-search-0").attr('placeholder', 'Search here')
+
         });
     </script>
 </body>

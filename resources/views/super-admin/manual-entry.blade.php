@@ -262,42 +262,43 @@
                         </div>
                         <form action="#" id="addEntryForm">
                             @csrf
-                            <div class="px-3 my-3">
-                                <label class="m-0" for="user_type">Choose User</label>
-                                <select name="user_type" class="form-control" id="user_type">
-                                    @foreach($users as $user)
-                                    <option value="{{$user['id']}}">{{$user['name']}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
                             <div class="mt-3 d-lg-flex align-items-center justify-content-between px-3" style="gap: 10px;">
-                                <div class="w-100">
-                                    <label class="m-0" for="email">Select Date</label>
+                                <div class="w-50">
+                                    <label class="m-0" for="email">Name</label>
+                                    <div class="input-group ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user"></i></span>
+                                        </div>
+                                        <input readonly class="form-control" type="text" id="email" value="{{$clock['user']['name']}}" name="email">
+                                    </div>
+                                </div>
+                                <div class="w-50">
+                                    <label class="m-0" for="email">Date</label>
                                     <div class="input-group ">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-calendar"></i></span>
                                         </div>
-                                        <input class="form-control" type="date" id="email" name="email">
+                                        <input readonly class="form-control" type="text" id="email" value="{{date('M d, Y', strtotime($clock['time']))}}" name="email">
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-3 d-lg-flex align-items-center justify-content-between px-3" style="gap: 10px;">
                                 <div class="w-50">
-                                    <label class="m-0" for="password">Clock In</label>
+                                    <label class="m-0" for="password">Clock Out</label>
                                     <div class="input-group ">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
                                         </div>
-                                        <input class="form-control" type="time" id="password" name="password">
+                                        <input readonly class="form-control" type="text" value="{{date('h:i a', strtotime($clock['time']))}}" id="password" name="password">
                                     </div>
                                 </div>
                                 <div class="w-50">
-                                    <label class="m-0" for="password_confirmation">Clock Out</label>
+                                    <label class="m-0" for="password_confirmation">Total Minutes</label>
                                     <div class="input-group ">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
                                         </div>
-                                        <input class="form-control" type="time" id="password_confirmation" name="password_confirmation">
+                                        <input class="form-control" type="text" value="{{$clock['minutes']}}" id="password" name="password">
                                     </div>
                                 </div>
                             </div>

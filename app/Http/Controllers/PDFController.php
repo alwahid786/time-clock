@@ -18,8 +18,8 @@ class PDFController extends Controller
     {
 
         $query = Clock::query();
-        $startDate = date('d/m/y', strtotime($request->reportstartdate));
-        $endDate = date('d/m/y', strtotime($request->reportenddate));
+        $startDate = date('m/d/Y', strtotime($request->reportstartdate));
+        $endDate = date('m/d/Y', strtotime($request->reportenddate));
         $startDateq = date('Y-m-d', strtotime($request->reportstartdate));
         $endDateq = date('Y-m-d', strtotime($request->reportenddate));
         if ($request->has('reportnames') && $request->reportnames != null) {

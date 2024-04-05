@@ -271,7 +271,7 @@
                         <div class="d-flex align-items-center justify-content-between table-header px-2">
                             <h5 class="m-0"><strong>{{$key}}</strong></h5>
                             <div class="d-flex flex-column align-items-end">
-                                <div style="line-height: 1; color: #17a2b8;font-size:18px;">{{convertMinutesToTime($totalHours) == '' ? '0 min' : convertMinutesToTime($totalHours)}}</div><small><strong>{{$startDate}} - {{$endDate}}</strong></small>
+                                <div style="line-height: 1; color: #17a2b8;font-size:18px;">{{convertMinutesToTime($totalHours) == '' ? '0 min' : convertMinutesToTime($totalHours)}}</div><small><strong>{{date('m/d/Y', strtotime($startDate))}} - {{date('m/d/Y', strtotime($endDate))}}</strong></small>
                             </div>
                         </div>
                         <table class="table">
