@@ -249,29 +249,29 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form action="{{ route('adminsList') }}" method="GET">
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" placeholder="Enter name">
+                            <input type="text" class="form-control" name="name" id="name" placeholder="Enter name" value="{{ request('name') }}">
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter email">
+                            <input type="email" class="form-control" name="email" id="email" placeholder="Enter email" value="{{ request('email') }}">
                         </div>
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label for="startDate">Start Date</label>
                             <input type="date" class="form-control" id="startDate">
                         </div>
                         <div class="form-group">
                             <label for="endDate">End Date</label>
                             <input type="date" class="form-control" id="endDate">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Apply</button>
-                </div>
+                        </div> --}}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Apply</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

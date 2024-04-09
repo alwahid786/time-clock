@@ -25,17 +25,36 @@ class SuperAdminController extends Controller
 
     public function timeLogs(Request $request)
     {
+
+        // if ($request->has('name') && $request->name != '' || $request->has('start_date') && $request->start_date != '' || $request->has('end_date') && $request->end_date != '') {
+        //     $clocks = Clock::where('users.user_type', '!=', 'super-admin')->where('users.user_type', 'user');
+
+        //     if ($request->has('name') && $request->name != '' && $request->has('start_date') && $request->start_date != '' && $request->has('end_date') && $request->end_date != '') {
+        //         $clocks->where('users.name', 'like', '%' . $request->input('name') . '%')->wherewhereBetween('clock.time', [$request['start_date'], $request['end_date']]);
+
+        //     }
+        //     // else {
+            //     if ($request->filled('name')) {
+            //         $users->where('name', 'like', '%' . $request->input('name') . '%');
+            //     }
+
+            //     if ($request->filled('email')) {
+            //         $users->where('email', 'like', '%' . $request->input('email') . '%');
+            //     }
+            // }
+        //     $clocks = $clocks->leftjoin('users', 'clock.user_id', '=', 'users.id')->select('users.*', 'clock.*')->get();
+        //     $clocks = $clocks->paginate(10);
+        // }
+        // else {
+        //     $clocks = Clock::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->leftjoin('users', 'clock.user_id', '=', 'users.id')->get();
+        // }
+        // return view('super-admin.time-logs', compact('clocks'));
+
         // dd($request->all());
         $query = Clock::query();
         if ($request->has('name') && $request->name != '') {
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('name', $request->name);
-            });
-        }
-
-        if ($request->has('email') && $request->email != '') {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('email', $request->email);
             });
         }
 
@@ -135,20 +154,62 @@ class SuperAdminController extends Controller
     // Get All Users
     public function getAllUsers(Request $request)
     {
-        $usersQuery = User::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->with('admins');
+        if ($request->has('name') && $request->name != '' || $request->has('email') && $request->email != '') {
+            $users = User::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->with('admins');
 
-        if ($request->has('name') && $request->name != null) {
-            $usersQuery->where('name', 'like', '%' . $request->name . '%');
+            if ($request->filled('name') && $request->name != '' || $request->filled('email') && $request->email != '') {
+                $users->where('name', 'like', '%' . $request->input('name') . '%')->where('email', 'like', '%' . $request->input('email') . '%');
+
+            }
+            if ($request->filled('name')) {
+                $users->where('name', 'like', '%' . $request->input('name') . '%');
+            }
+
+            if ($request->filled('email')) {
+                $users->where('email', 'like', '%' . $request->input('email') . '%');
+            }
+            $users = $users->paginate(10);
         }
-
-        $users = $usersQuery->get();
+        else {
+            $users = User::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->with('admins')->get();
+        }
         return view('super-admin.users', compact('users'));
     }
 
     // Get All Admins
-    public function getAllAdmins()
+    // public function getAllAdmins()
+    // {
+    //     $admins = User::where('user_type', '!=', 'super-admin')->where('user_type', 'admin')->with('admins')->get();
+    //     if ($admins) {
+    //         foreach ($admins as $admin) {
+    //             $admin['userCount'] = User::where('admin_id', $admin->id)->count();
+    //         }
+    //     }
+    //     return view('super-admin.admins', compact('admins'));
+    // }
+
+    public function getAllAdmins(Request $request)
     {
-        $admins = User::where('user_type', '!=', 'super-admin')->where('user_type', 'admin')->with('admins')->get();
+        $admin = "";
+        if ($request->has('name') && $request->name != '' || $request->has('email') && $request->email != '') {
+            $admins = User::where('user_type', '!=', 'super-admin')->where('user_type', 'admin')->with('admins');
+
+            if ($request->filled('name') && $request->name != '' || $request->filled('email') && $request->email != '') {
+                $admins->where('name', 'like', '%' . $request->input('name') . '%')->where('email', 'like', '%' . $request->input('email') . '%');
+
+            }
+            if ($request->filled('name')) {
+                $admins->where('name', 'like', '%' . $request->input('name') . '%');
+            }
+
+            if ($request->filled('email')) {
+                $admins->where('email', 'like', '%' . $request->input('email') . '%');
+            }
+            $admins = $admins->paginate(10);
+        }
+        else {
+            $admins = User::where('user_type', '!=', 'super-admin')->where('user_type', 'admin')->with('admins')->get();
+        }
         if ($admins) {
             foreach ($admins as $admin) {
                 $admin['userCount'] = User::where('admin_id', $admin->id)->count();
