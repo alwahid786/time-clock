@@ -54,7 +54,7 @@ class UserController extends Controller
         Session::put('email', $request->email);
         try {
             // Send OTP to the user's email address
-            Mail::to($request->email)->send(new ForgotPasswordMail($otp));
+            // Mail::to($request->email)->send(new ForgotPasswordMail($otp));
             return response()->json(['message' => 'An email containing 4 digits OTP code has been sent to registered email.'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to send OTP'], 500);
@@ -146,10 +146,10 @@ class UserController extends Controller
         $user = User::create($user);
 
         // Send email
-        if (!Mail::to($request->email)->send(new UserCredentials($request->email, $request->password))) {
-            // Email sending failed
-            return response()->json(['error' => 'Failed to send email'], 500);
-        }
+        // if (!Mail::to($request->email)->send(new UserCredentials($request->email, $request->password))) {
+        //     // Email sending failed
+        //     return response()->json(['error' => 'Failed to send email'], 500);
+        // }
 
         return response()->json($user, 201);
     }
