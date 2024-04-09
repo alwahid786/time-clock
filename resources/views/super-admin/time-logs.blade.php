@@ -195,6 +195,12 @@
             background-color: #ffa50021;
             color: orange;
         }
+
+        .deleteIcon:hover {
+            border: 1px solid orange !important;
+            background-color: #ffa50021 !important;
+            color: orange !important;
+        }
     </style>
 </head>
 
@@ -263,7 +269,7 @@
                                     @if($clock['memo'] != null)
                                     <div id="getMemo" class="d-none">{{$clock['memo']}}</div>
                                     <div style="width: 150px; ">
-                                        <span style="line-height: 0.8;display: inline-block; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">This is some text for truncation</span>
+                                        <span style="line-height: 0.8;display: inline-block; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{$clock['memo']}}</span>
                                     </div>
                                     <a style="line-height: 1; font-size: 14px;" id="viewMemo" data-toggle="modal" data-target="#checkDetailsModal" href="javascript:void">View memo</a>
                                     @else
@@ -415,11 +421,12 @@
             $('input[name="dates"]').on('cancel.daterangepicker', function(ev, picker) {
                 $(this).val('');
             });
-
             $(document).ready(function() {
-                // $('#multiple-names').select2({
-                //     tags: true
-                // });
+                $('#multiple-names').select2({
+                    tags: true
+                });
+            });
+            $(document).ready(function() {
                 $("#viewMemo").click(function() {
                     var memo = $("#getMemo").text();
                     $("#showMemo").text(memo);

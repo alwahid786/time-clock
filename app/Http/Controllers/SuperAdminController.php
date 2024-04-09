@@ -26,44 +26,19 @@ class SuperAdminController extends Controller
     public function timeLogs(Request $request)
     {
 
-        // if ($request->has('name') && $request->name != '' || $request->has('start_date') && $request->start_date != '' || $request->has('end_date') && $request->end_date != '') {
-        //     $clocks = Clock::where('users.user_type', '!=', 'super-admin')->where('users.user_type', 'user');
-
-        //     if ($request->has('name') && $request->name != '' && $request->has('start_date') && $request->start_date != '' && $request->has('end_date') && $request->end_date != '') {
-        //         $clocks->where('users.name', 'like', '%' . $request->input('name') . '%')->wherewhereBetween('clock.time', [$request['start_date'], $request['end_date']]);
-
-        //     }
-        //     // else {
-            //     if ($request->filled('name')) {
-            //         $users->where('name', 'like', '%' . $request->input('name') . '%');
-            //     }
-
-            //     if ($request->filled('email')) {
-            //         $users->where('email', 'like', '%' . $request->input('email') . '%');
-            //     }
-            // }
-        //     $clocks = $clocks->leftjoin('users', 'clock.user_id', '=', 'users.id')->select('users.*', 'clock.*')->get();
-        //     $clocks = $clocks->paginate(10);
-        // }
-        // else {
-        //     $clocks = Clock::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->leftjoin('users', 'clock.user_id', '=', 'users.id')->get();
-        // }
-        // return view('super-admin.time-logs', compact('clocks'));
-
-        // dd($request->all());
         $query = Clock::query();
         if ($request->has('name') && $request->name != '') {
             $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', $request->name);
+                $q->where('name', 'like', '%' . $request->input('name') . '%');
             });
         }
 
         if ($request->has('startDate') && $request->startDate != '') {
-            $query->whereDate('created_at', '>=', $request->startDate);
+            $query->whereDate('time', '>=', date($request->startDate));
         }
 
         if ($request->has('endDate') && $request->endDate != '') {
-            $query->whereDate('created_at', '<=', $request->endDate);
+            $query->whereDate('time', '<=', date($request->endDate));
         }
         $adminType = auth()->user()->user_type;
         if ($adminType == 'super-admin') {
@@ -105,13 +80,17 @@ class SuperAdminController extends Controller
             }
         }
         return redirect()->route('timeLogs');
-
     }
 
     public function generateReport(Request $request)
     {
         $query = Clock::query();
-        $startDate = Clock::orderBy('created_at', 'ASC')->pluck('time')->first();
+        if (auth()->user()->user_type == 'admin') {
+            $userIds = User::where('admin_id', auth()->user()->id)->pluck('id')->toArray();
+            $startDate = Clock::wherein('user_id', $userIds)->orderBy('created_at', 'ASC')->pluck('time')->first();
+        } else {
+            $startDate = Clock::orderBy('created_at', 'ASC')->pluck('time')->first();
+        }
         $startDate = date('m/d/Y', strtotime($startDate));
         $endDate = Carbon::now()->format('m/d/Y');
         $names = $request->reportnames;
@@ -128,7 +107,11 @@ class SuperAdminController extends Controller
             $query->whereDate('created_at', '<=', $request->reportenddate);
             $endDate = date('m/d/Y', strtotime($request->reportenddate));
         }
-        $clocks = $query->with('user')->orderBy('created_at', 'DESC')->get();
+        if (auth()->user()->user_type == 'admin') {
+            $clocks = $query->with('user')->orderBy('created_at', 'DESC')->wherein('user_id', $userIds)->get();
+        }else{
+            $clocks = $query->with('user')->orderBy('created_at', 'DESC')->get();
+        }
         // Group the clocks by user name and date
         $groupedClocks = [];
         foreach ($clocks as $clock) {
@@ -159,7 +142,6 @@ class SuperAdminController extends Controller
 
             if ($request->filled('name') && $request->name != '' || $request->filled('email') && $request->email != '') {
                 $users->where('name', 'like', '%' . $request->input('name') . '%')->where('email', 'like', '%' . $request->input('email') . '%');
-
             }
             if ($request->filled('name')) {
                 $users->where('name', 'like', '%' . $request->input('name') . '%');
@@ -168,9 +150,8 @@ class SuperAdminController extends Controller
             if ($request->filled('email')) {
                 $users->where('email', 'like', '%' . $request->input('email') . '%');
             }
-            $users = $users->paginate(10);
-        }
-        else {
+            $users = $users->get();
+        } else {
             $users = User::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->with('admins')->get();
         }
         return view('super-admin.users', compact('users'));
@@ -196,7 +177,6 @@ class SuperAdminController extends Controller
 
             if ($request->filled('name') && $request->name != '' || $request->filled('email') && $request->email != '') {
                 $admins->where('name', 'like', '%' . $request->input('name') . '%')->where('email', 'like', '%' . $request->input('email') . '%');
-
             }
             if ($request->filled('name')) {
                 $admins->where('name', 'like', '%' . $request->input('name') . '%');
@@ -205,9 +185,8 @@ class SuperAdminController extends Controller
             if ($request->filled('email')) {
                 $admins->where('email', 'like', '%' . $request->input('email') . '%');
             }
-            $admins = $admins->paginate(10);
-        }
-        else {
+            $admins = $admins->get();
+        } else {
             $admins = User::where('user_type', '!=', 'super-admin')->where('user_type', 'admin')->with('admins')->get();
         }
         if ($admins) {

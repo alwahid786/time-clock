@@ -254,7 +254,7 @@
     <div class="loader-overlay d-none">
         <img src="{{asset('assets/images/loader.gif')}}" alt="">
     </div>
-    @include('super-admin.layouts.sidebar')
+    @include('admin.layouts.sidebar')
     <div class="container-fluid px-0">
         <div class="bg-blue" style="height: 60px;">
             <h1 class="text-center text-white">Add Manual Entry </h1>
@@ -266,7 +266,7 @@
                         <div class="d-flex justify-content-between align-items-baseline">
                             <h4 class="px-3 text-center" style="color: #17a2b8;">Enter Details</h4>
                         </div>
-                        <form action="{{route('updateClock')}}" id="addEntryForm" method="POST">
+                        <form action="{{route('admin.updateClock')}}" id="addEntryForm" method="POST">
                             @csrf
                             <div class="mt-3 d-lg-flex align-items-center justify-content-between px-3" style="gap: 10px;">
                                 <div class="w-50">
@@ -322,7 +322,7 @@
                             </div>
 
                             <div class="px-3 mt-5 d-flex align-items-center justify-content-end" style="gap: 5px;">
-                                <a href="{{route('timeLogs')}}">
+                                <a href="{{route('admin.timeLogs')}}">
                                     <button type="button" class="cancel_user_btn"><i class="fa-solid fa-xmark mr-3"></i> Cancel</button>
                                 </a>
                                 <button type="submit" id="submitButton" class="save_user_btn"><i class="fa-solid fa-hourglass-start mr-3 "></i> Save</button>

@@ -5,22 +5,40 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Clock;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Carbon;
 
 class AdminController extends Controller
 {
     // Get Dashboard Data
     public function dashboard()
     {
-        $users = User::where('user_type', '!=', 'super-admin')->where(['user_type'=> 'user', 'admin_id' => auth()->user()->id])->count();
+        $users = User::where('user_type', '!=', 'super-admin')->where(['user_type' => 'user', 'admin_id' => auth()->user()->id])->count();
         $admins = User::where('user_type', '!=', 'super-admin')->where(['user_type' => 'user', 'admin_id' => auth()->user()->id])->count();
         return view('admin.dashboard', compact('users', 'admins'));
     }
 
     // Get All Users
-    public function getAllUsers()
+    public function getAllUsers(Request $request)
     {
-        $users = User::where('user_type', '!=', 'super-admin')->where('admin_id', auth()->user()->id)->with('admins')->get();
+        if ($request->has('name') && $request->name != '' || $request->has('email') && $request->email != '') {
+            $users = User::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->with('admins');
+
+            if ($request->filled('name') && $request->name != '' || $request->filled('email') && $request->email != '') {
+                $users->where('name', 'like', '%' . $request->input('name') . '%')->where('email', 'like', '%' . $request->input('email') . '%');
+            }
+            if ($request->filled('name')) {
+                $users->where('name', 'like', '%' . $request->input('name') . '%');
+            }
+
+            if ($request->filled('email')) {
+                $users->where('email', 'like', '%' . $request->input('email') . '%');
+            }
+            $users = $users->where('admin_id', auth()->user()->id)->get();
+        } else {
+            $users = User::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->where('admin_id', auth()->user()->id)->with('admins')->get();
+        }
         return view('admin.users', compact('users'));
     }
 
@@ -71,5 +89,69 @@ class AdminController extends Controller
         // }
 
         return response()->json($user, 201);
+    }
+
+    // Get All Time Logs
+    public function timeLogs(Request $request)
+    {
+        $adminId = auth()->user()->id;
+        $userIds = User::where('admin_id', $adminId)->pluck('id')->toArray();
+        $query = Clock::query();
+        if ($request->has('name') && $request->name != '') {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->input('name') . '%');
+            });
+        }
+
+        if ($request->has('startDate') && $request->startDate != '') {
+            $query->whereDate('time', '>=', date($request->startDate));
+        }
+
+        if ($request->has('endDate') && $request->endDate != '') {
+            $query->whereDate('time', '<=', date($request->endDate));
+        }
+        $adminType = auth()->user()->user_type;
+        if ($adminType == 'super-admin') {
+            $users = User::where('user_type', 'user')->get();
+        } else {
+            $users = User::where('user_type', 'user')->where('admin_id', auth()->user()->id)->get();
+        }
+        $clocks = $query->wherein('user_id', $userIds)->with('user')->orderBy('created_at', 'DESC')->get();
+        return view('admin.time-logs', compact('clocks', 'users'));
+    }
+
+    public function manualEntries($clockId)
+    {
+
+        $clock = Clock::find($clockId);
+        return view('admin.manual-entry', compact('clock'));
+    }
+
+    public function updateClock(Request $request)
+    {
+        $clock = Clock::find($request->id);
+        if ($clock->minutes != $request->minutes) {
+            if ($clock->minutes > $request->minutes) {
+                // deduction in time made
+                $diff = $clock->minutes - $request->minutes;
+                $newTime = Carbon::parse($clock->time)->subMinutes($diff);
+                $clock->time = $newTime;
+                $clock->minutes = $request->minutes;
+            } else if ($clock->minutes < $request->minutes) {
+                // addition in time made
+                $diff =  $request->minutes - $clock->minutes;
+                $newTime = Carbon::parse($clock->time)->addMinutes($diff);
+                $clock->time = $newTime;
+                $clock->minutes = $request->minutes;
+            }
+            if($request->has('memo') && $request->memo != null){
+                $clock->memo = $request->memo;
+            }
+            $res = $clock->save();
+            if ($res) {
+                return redirect()->route('admin.timeLogs');
+            }
+        }
+        return redirect()->route('admin.timeLogs');
     }
 }

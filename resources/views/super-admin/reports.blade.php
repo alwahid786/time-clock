@@ -235,7 +235,11 @@
     return $time;
     }
     @endphp
+    @if(auth()->user()->user_type == 'super-admin')
     @include('super-admin.layouts.sidebar')
+    @else
+    @include('admin.layouts.sidebar')
+    @endif
     <div class="container-fluid px-0">
         <div class="bg-blue" style="height: 60px;padding-left: 80px;">
             <div class="d-flex justify-content-between align-items-center">

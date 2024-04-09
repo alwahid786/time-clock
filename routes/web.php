@@ -49,46 +49,35 @@ Route::middleware('user.type:admin')->group(function () {
     Route::prefix('admin')->group(function () {
 
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('adminDashboard');
+        Route::get('/all-users', [AdminController::class, 'getAllUsers'])->name('admin.users'); // Get All Users for Admin
+        Route::get('/edit-user/{userId}/{type}', [AdminController::class, 'editUser'])->name('admin.editUser'); // Edit User
+        Route::any('/time-logs', [AdminController::class, 'timeLogs'])->name('admin.timeLogs');
+        Route::get('/manual-entry/{clockId}', [AdminController::class, 'manualEntries'])->name('admin.manualEntries');
+        Route::post('/update-clock', [AdminController::class, 'updateClock'])->name('admin.updateClock');
 
-        Route::get('/time-logs', function () {
-            return view('admin.time-logs');
-        })->name('admin.timeLogs');
         Route::get('/reports', function () {
             return view('admin.reports');
         })->name('reports');
-        Route::get('/all-users', function () {
-            return view('admin.users');
-        })->name('admin.users');
-        Route::get('/all-users', [AdminController::class, 'getAllUsers'])->name('admin.users'); // Get All Users for Admin
-        Route::get('/edit-user/{userId}/{type}', [AdminController::class, 'editUser'])->name('admin.editUser'); // Edit User
-
         Route::get('/add-user', function () {
             return view('admin.add-user');
         })->name('admin.addUser');
     });
 });
+Route::any('/generate-report', [SuperAdminController::class, 'generateReport'])->name('generateReport');
+Route::any('/generate-pdf', [PDFController::class, 'generatePdf'])->name('generatePdf');
 Route::middleware('user.type:super-admin')->group(function () {
     Route::prefix('super-admin')->group(function () {
-
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('superAdminDashboard');
-        Route::any('/time-logs', [SuperAdminController::class, 'timeLogs'])->name('timeLogs');
-        Route::any('/generate-report', [SuperAdminController::class, 'generateReport'])->name('generateReport');
-        Route::any('/generate-pdf', [PDFController::class, 'generatePdf'])->name('generatePdf');
-        Route::get('/manual-entry/{clockId}', [SuperAdminController::class, 'manualEntries'])->name('manualEntries');
-        Route::post('/update-clock', [SuperAdminController::class, 'updateClock'])->name('updateClock');
-        // Route::get('/time-logs', function () {
-        //     return view('super-admin.time-logs');
-        // })->name('timeLogs');
-        Route::get('/reports', function () {
-            return view('super-admin.reports');
-        })->name('reports');
         Route::any('/all-users', [SuperAdminController::class, 'getAllUsers'])->name('superAdminUsers'); // Get All Users
         Route::get('/all-admins', [SuperAdminController::class, 'getAllAdmins'])->name('adminsList'); // Get All Admins
         Route::get('/edit-user/{userId}/{type}', [SuperAdminController::class, 'editUser'])->name('editUser'); // Edit User
-        // Route::get('/searchuser', [SuperAdminController::class, 'searchuser'])->name('searchuser'); // Search User
+        Route::any('/time-logs', [SuperAdminController::class, 'timeLogs'])->name('timeLogs');
+        Route::get('/manual-entry/{clockId}', [SuperAdminController::class, 'manualEntries'])->name('manualEntries');
+        Route::post('/update-clock', [SuperAdminController::class, 'updateClock'])->name('updateClock');
 
-
-
+        Route::get('/reports', function () {
+            return view('super-admin.reports');
+        })->name('reports');
         Route::get('/add-user', function () {
             return view('super-admin.add-user');
         })->name('addNewUser');

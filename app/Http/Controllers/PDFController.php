@@ -16,7 +16,6 @@ class PDFController extends Controller
 {
     public function generatePdf(Request $request)
     {
-
         $query = Clock::query();
         $startDate = date('m/d/Y', strtotime($request->reportstartdate));
         $endDate = date('m/d/Y', strtotime($request->reportenddate));
@@ -33,7 +32,12 @@ class PDFController extends Controller
         if ($request->has('reportenddate') && $request->reportenddate != null) {
             $query->whereDate('created_at', '<=', $endDateq);
         }
-        $clocks = $query->with('user')->orderBy('created_at', 'DESC')->get();
+        if (auth()->user()->user_type == 'admin') {
+            $userIds = User::where('admin_id', auth()->user()->id)->pluck('id')->toArray();
+            $clocks = $query->with('user')->orderBy('created_at', 'DESC')->wherein('user_id', $userIds)->get();
+        } else {
+            $clocks = $query->with('user')->orderBy('created_at', 'DESC')->get();
+        }
         // Group the clocks by user name and date
         $groupedClocks = [];
         foreach ($clocks as $clock) {
