@@ -84,6 +84,8 @@ Route::middleware('user.type:super-admin')->group(function () {
         Route::get('/all-users', [SuperAdminController::class, 'getAllUsers'])->name('superAdminUsers'); // Get All Users
         Route::get('/all-admins', [SuperAdminController::class, 'getAllAdmins'])->name('adminsList'); // Get All Admins
         Route::get('/edit-user/{userId}/{type}', [SuperAdminController::class, 'editUser'])->name('editUser'); // Edit User
+        // Route::get('/searchuser', [SuperAdminController::class, 'searchuser'])->name('searchuser'); // Search User
+
 
 
         Route::get('/add-user', function () {

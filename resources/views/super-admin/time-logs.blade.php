@@ -335,27 +335,22 @@
                         @csrf
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" value="{{ request('name') }}">
                         </div>
                         <div class="form-group">
                             <label for="startDate">Start Date</label>
-                            <input type="date" class="form-control" id="startDate" name="startDate">
+                            <input type="date" class="form-control" id="startDate" name="startDate" value="{{ request('startDate') }}">
                         </div>
                         <div class="form-group">
                             <label for="endDate">End Date</label>
-                            <input type="date" class="form-control" id="endDate" name="endDate">
+                            <input type="date" class="form-control" id="endDate" name="endDate" value="{{ request('endDate') }}">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Apply</button>
+                            <button type="submit" class="btn btn-primary">Search</button>
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
