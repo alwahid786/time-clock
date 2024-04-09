@@ -258,14 +258,14 @@
                             <label for="email">Email</label>
                             <input type="email" class="form-control" id="email" placeholder="Enter email">
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="startDate">Start Date</label>
                             <input type="date" class="form-control" id="startDate">
                         </div>
                         <div class="form-group">
                             <label for="endDate">End Date</label>
                             <input type="date" class="form-control" id="endDate">
-                        </div>
+                        </div> -->
                     </form>
                 </div>
                 <div class="modal-footer">

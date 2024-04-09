@@ -241,6 +241,12 @@
             background-repeat: no-repeat;
             background-position: center;
         }
+
+        .memoText:focus,
+        .memoText:active{
+            box-shadow: none !important;
+            outline: none !important;
+        }
     </style>
 </head>
 
@@ -260,7 +266,7 @@
                         <div class="d-flex justify-content-between align-items-baseline">
                             <h4 class="px-3 text-center" style="color: #17a2b8;">Enter Details</h4>
                         </div>
-                        <form action="#" id="addEntryForm">
+                        <form action="{{route('updateClock')}}" id="addEntryForm" method="POST">
                             @csrf
                             <div class="mt-3 d-lg-flex align-items-center justify-content-between px-3" style="gap: 10px;">
                                 <div class="w-50">
@@ -269,7 +275,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user"></i></span>
                                         </div>
-                                        <input readonly class="form-control" type="text" id="email" value="{{$clock['user']['name']}}" name="email">
+                                        <input readonly class="form-control" type="text" id="email" value="{{$clock['user']['name']}}" >
                                     </div>
                                 </div>
                                 <div class="w-50">
@@ -278,7 +284,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-calendar"></i></span>
                                         </div>
-                                        <input readonly class="form-control" type="text" id="email" value="{{date('M d, Y', strtotime($clock['time']))}}" name="email">
+                                        <input readonly class="form-control" type="text" id="email" value="{{date('M d, Y', strtotime($clock['time']))}}" >
                                     </div>
                                 </div>
                             </div>
@@ -289,7 +295,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
                                         </div>
-                                        <input readonly class="form-control" type="text" value="{{date('h:i a', strtotime($clock['time']))}}" id="password" name="password">
+                                        <input readonly class="form-control" type="text" value="{{date('h:i a', strtotime($clock['time']))}}" id="password" >
                                     </div>
                                 </div>
                                 <div class="w-50">
@@ -298,16 +304,28 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
                                         </div>
-                                        <input class="form-control" type="text" value="{{$clock['minutes']}}" id="password" name="password">
+                                        <input class="form-control" type="text" value="{{$clock['minutes']}}" id="password" name="minutes">
+                                        <input class="form-control" type="hidden" value="{{$clock['id']}}" id="password" name="id">
                                     </div>
+                                </div>
+                            </div>
+                            <div class="mt-3 d-lg-flex align-items-center justify-content-between px-3" style="gap: 10px;">
+                                <div class="w-100">
+                                    <label class="m-0" for="memo" class="text-primary">
+                                        Memo
+                                        <!-- <span class="" style="font-size: 10px;color:gray">(Optional)</span> -->
+                                    </label>
+                                    <br>
+                                    <textarea class="px-3 py-2 memoText" style="color:gray;width: 100%; border:1px solid lightgray; border-radius:5px;" name="memo" id="memo" rows="5">{{$clock['memo']}}</textarea>
+
                                 </div>
                             </div>
 
                             <div class="px-3 mt-5 d-flex align-items-center justify-content-end" style="gap: 5px;">
-                                <a href="<?php echo request()->input('type') == 'user' ? route('superAdminUsers') : route('adminsList') ?>">
+                                <a href="{{route('timeLogs')}}">
                                     <button type="button" class="cancel_user_btn"><i class="fa-solid fa-xmark mr-3"></i> Cancel</button>
                                 </a>
-                                <button type="button" id="submitButton" class="save_user_btn"><i class="fa-solid fa-hourglass-start mr-3 "></i> Save</button>
+                                <button type="submit" id="submitButton" class="save_user_btn"><i class="fa-solid fa-hourglass-start mr-3 "></i> Save</button>
                             </div>
                         </form>
                     </div>

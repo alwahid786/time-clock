@@ -58,9 +58,35 @@ class SuperAdminController extends Controller
 
     public function manualEntries($clockId)
     {
-        
+
         $clock = Clock::find($clockId);
         return view('super-admin.manual-entry', compact('clock'));
+    }
+
+    public function updateClock(Request $request)
+    {
+        $clock = Clock::find($request->id);
+        if ($clock->minutes != $request->minutes) {
+            if ($clock->minutes > $request->minutes) {
+                // deduction in time made
+                $diff = $clock->minutes - $request->minutes;
+                $newTime = Carbon::parse($clock->time)->subMinutes($diff);
+                $clock->time = $newTime;
+                $clock->minutes = $request->minutes;
+            } else if ($clock->minutes < $request->minutes) {
+                // addition in time made
+                $diff =  $request->minutes - $clock->minutes;
+                $newTime = Carbon::parse($clock->time)->addMinutes($diff);
+                $clock->time = $newTime;
+                $clock->minutes = $request->minutes;
+            }
+            $res = $clock->save();
+            if ($res) {
+                return redirect()->route('timeLogs');
+            }
+        }
+        return redirect()->route('timeLogs');
+
     }
 
     public function generateReport(Request $request)
@@ -107,9 +133,15 @@ class SuperAdminController extends Controller
 
 
     // Get All Users
-    public function getAllUsers()
+    public function getAllUsers(Request $request)
     {
-        $users = User::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->with('admins')->get();
+        $usersQuery = User::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->with('admins');
+
+        if ($request->has('name') && $request->name != null) {
+            $usersQuery->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        $users = $usersQuery->get();
         return view('super-admin.users', compact('users'));
     }
 

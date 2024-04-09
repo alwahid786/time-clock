@@ -75,13 +75,14 @@ Route::middleware('user.type:super-admin')->group(function () {
         Route::any('/generate-report', [SuperAdminController::class, 'generateReport'])->name('generateReport');
         Route::any('/generate-pdf', [PDFController::class, 'generatePdf'])->name('generatePdf');
         Route::get('/manual-entry/{clockId}', [SuperAdminController::class, 'manualEntries'])->name('manualEntries');
+        Route::post('/update-clock', [SuperAdminController::class, 'updateClock'])->name('updateClock');
         // Route::get('/time-logs', function () {
         //     return view('super-admin.time-logs');
         // })->name('timeLogs');
         Route::get('/reports', function () {
             return view('super-admin.reports');
         })->name('reports');
-        Route::get('/all-users', [SuperAdminController::class, 'getAllUsers'])->name('superAdminUsers'); // Get All Users
+        Route::any('/all-users', [SuperAdminController::class, 'getAllUsers'])->name('superAdminUsers'); // Get All Users
         Route::get('/all-admins', [SuperAdminController::class, 'getAllAdmins'])->name('adminsList'); // Get All Admins
         Route::get('/edit-user/{userId}/{type}', [SuperAdminController::class, 'editUser'])->name('editUser'); // Edit User
 
