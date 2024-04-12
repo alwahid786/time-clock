@@ -173,18 +173,19 @@ class SuperAdminController extends Controller
     public function getAllAdmins(Request $request)
     {
         $admin = "";
-        if ($request->has('name') && $request->name != '' || $request->has('email') && $request->email != '') {
+        if ($request->has('name') && $request->name != '' || $request->has('startDate') && $request->startDate != '' || $request->has('endDate') && $request->endDate != '') {
             $admins = User::where('user_type', '!=', 'super-admin')->where('user_type', 'admin')->with('admins');
 
-            if ($request->filled('name') && $request->name != '' || $request->filled('email') && $request->email != '') {
-                $admins->where('name', 'like', '%' . $request->input('name') . '%')->where('email', 'like', '%' . $request->input('email') . '%');
-            }
             if ($request->filled('name')) {
                 $admins->where('name', 'like', '%' . $request->input('name') . '%');
             }
 
-            if ($request->filled('email')) {
-                $admins->where('email', 'like', '%' . $request->input('email') . '%');
+            if ($request->filled('startDate')) {
+                $admins->whereDate('created_at', '>=', date($request->input('startDate')));
+            }
+
+            if ($request->filled('endDate')) {
+                $admins->whereDate('created_at', '<=', date($request->input('endDate')));
             }
             $admins = $admins->get();
         } else {
