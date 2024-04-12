@@ -87,10 +87,8 @@ Route::middleware('user.type:super-admin')->group(function () {
 // User Routes
 Route::middleware('user.type:user')->group(function () {
     Route::prefix('user')->group(function () {
-        // Route::get('/dashboard', function () {
-        //     return view('users.dashboard');
-        // })->name('userDashboard');
-        Route::get('dashboard', [UserController::class, 'userDashboard'])->name('userDashboard');
+        Route::get('dashboard', [UserController::class, 'userDashboard'])->name('user.dashboard');
+        Route::get('change-password', [UserController::class, 'changePassword'])->name('user.changePassword');
     });
     Route::post('clock', [UserController::class, 'applyCLock'])->name('applyClock');
 

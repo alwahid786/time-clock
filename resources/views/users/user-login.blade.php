@@ -99,7 +99,7 @@
                             text: response.message,
                         }).then((result) => {
                             if (response.user_type == 'user') {
-                                window.location.href = `{{route('userDashboard')}}`
+                                window.location.href = `{{route('user.dashboard')}}`
                             } else if (response.user_type == 'admin') {
                                 window.location.href = `{{route('adminDashboard')}}`
                             } else {

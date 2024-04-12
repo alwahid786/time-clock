@@ -170,9 +170,15 @@
             </a>
         </li>
         <li>
-            <a href="#" class="active">
+            <a href="{{route('user.dashboard')}}" class="active">
                 <span class="icon"><i class="fas fa-home"></i></span>
                 <span class="title">Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{route('user.changePassword')}}" class="">
+                <span class="icon"><i class="fas fa-key"></i></span>
+                <span class="title">Change Password</span>
             </a>
         </li>
         <!-- <li>

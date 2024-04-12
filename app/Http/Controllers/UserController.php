@@ -94,10 +94,21 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => 'Password must have minimum 8 digits.'], 400);
         }
-        $email = Session::get('email');
+        if (Auth::check()) {
+            $email = auth()->user()->email;
+        } elseif (Session::get('email') != null) {
+            dd('coming');
+            $email = Session::get('email');
+        } else {
+            return response()->json(['error' => 'You need to login to change your password.'], 500);
+        }
         if ($email) {
-            // Store OTP in the database
-            $user = User::where('email', $email)->update(['password' => bcrypt($request->password)]);
+            $user = User::where('email', $email)->update(['password' => bcrypt($request->password), 'otp' => null]);
+            if (Auth::check()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
             if ($user) {
                 return response()->json(['message' => 'Password successfully reset!'], 200);
             } else {
@@ -106,6 +117,11 @@ class UserController extends Controller
         } else {
             return response()->json(['error' => 'Session expired, Re-enter email.'], 500);
         }
+    }
+
+    public function changePassword()
+    {
+        return view('users.change-password');
     }
 
     public function addUser(Request $request)
