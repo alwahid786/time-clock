@@ -226,7 +226,7 @@
                                 <td>{{date('h:i A', strtotime($user['created_at']))}}</td>
                                 <td class="d-flex align-items-center">
                                     <a class="tableIcons editIcon" href="{{ route('editUser', ['userId' => $user['id'], 'type' => 'user']) }}"><i class="fa-solid fa-pencil"></i></a>
-                                    <a class="tableIcons deleteIcon ml-3" href="javascript:void(0)"><i class="fa-solid fa-trash"></i></a>
+                                    <a class="tableIcons deleteIcon ml-3" href="{{route('deleteUser', ['userId' => $user['id']])}}"><i class="fa-solid fa-trash"></i></a>
                                 </td>
                             </tr>
                             @endforeach
@@ -256,22 +256,18 @@
                             <input type="text" class="form-control" name="name" id="name" placeholder="Enter name" value="{{ request('name') }}">
                         </div>
                         <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="email" placeholder="Enter email" value="{{ request('email') }}">
-                        </div>
-                        {{-- <div class="form-group">
                             <label for="startDate">Start Date</label>
-                            <input type="date" class="form-control" id="startDate">
+                            <input type="date" class="form-control" id="startDate" name="startDate">
                         </div>
                         <div class="form-group">
                             <label for="endDate">End Date</label>
-                            <input type="date" class="form-control" id="endDate">
-                        </div> --}}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Search</button>
-                    </div>
+                            <input type="date" class="form-control" id="endDate" name="endDate">
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
                 </form>
             </div>
         </div>

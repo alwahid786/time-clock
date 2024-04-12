@@ -109,7 +109,7 @@ class SuperAdminController extends Controller
         }
         if (auth()->user()->user_type == 'admin') {
             $clocks = $query->with('user')->orderBy('created_at', 'DESC')->wherein('user_id', $userIds)->get();
-        }else{
+        } else {
             $clocks = $query->with('user')->orderBy('created_at', 'DESC')->get();
         }
         // Group the clocks by user name and date
@@ -137,18 +137,19 @@ class SuperAdminController extends Controller
     // Get All Users
     public function getAllUsers(Request $request)
     {
-        if ($request->has('name') && $request->name != '' || $request->has('email') && $request->email != '') {
+        if ($request->has('name') && $request->name != '' || $request->has('startDate') && $request->startDate != '' || $request->has('endDate') && $request->endDate != '') {
             $users = User::where('user_type', '!=', 'super-admin')->where('user_type', 'user')->with('admins');
 
-            if ($request->filled('name') && $request->name != '' || $request->filled('email') && $request->email != '') {
-                $users->where('name', 'like', '%' . $request->input('name') . '%')->where('email', 'like', '%' . $request->input('email') . '%');
-            }
             if ($request->filled('name')) {
                 $users->where('name', 'like', '%' . $request->input('name') . '%');
             }
 
-            if ($request->filled('email')) {
-                $users->where('email', 'like', '%' . $request->input('email') . '%');
+            if ($request->filled('startDate')) {
+                $users->whereDate('created_at', '>=' ,date($request->input('startDate')));
+            }
+
+            if ($request->filled('endDate')) {
+                $users->whereDate('created_at', '<=', date($request->input('endDate')));
             }
             $users = $users->get();
         } else {
@@ -265,6 +266,17 @@ class SuperAdminController extends Controller
             return redirect()->back()->with('success', $message);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error importing users: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteUser(Request $request)
+    {
+        $userId = $request->userId;
+        User::where('id', $userId)->delete();
+        if(auth()->user()->user_type == 'super-admin'){
+            return redirect()->route('superAdminUsers');
+        }else{
+            return redirect()->route('admin.users');
         }
     }
 }

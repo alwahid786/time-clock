@@ -220,7 +220,7 @@
                                 <td>{{date('h:i A', strtotime($user['created_at']))}}</td>
                                 <td class="d-flex align-items-center">
                                     <a class="tableIcons editIcon" href="{{ route('admin.editUser', ['userId' => $user['id'], 'type' => 'user']) }}"><i class="fa-solid fa-pencil"></i></a>
-                                    <a class="tableIcons deleteIcon ml-3" href="javascript:void(0)"><i class="fa-solid fa-trash"></i></a>
+                                    <a class="tableIcons deleteIcon ml-3" href="{{route('deleteUser', ['userId' => $user['id']])}}"><i class="fa-solid fa-trash"></i></a>
                                 </td>
                             </tr>
                             @endforeach

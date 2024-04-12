@@ -57,7 +57,7 @@ Route::middleware('user.type:admin')->group(function () {
 
         Route::get('/reports', function () {
             return view('admin.reports');
-        })->name('reports');
+        })->name('admin.reports');
         Route::get('/add-user', function () {
             return view('admin.add-user');
         })->name('admin.addUser');
@@ -65,6 +65,7 @@ Route::middleware('user.type:admin')->group(function () {
 });
 Route::any('/generate-report', [SuperAdminController::class, 'generateReport'])->name('generateReport');
 Route::any('/generate-pdf', [PDFController::class, 'generatePdf'])->name('generatePdf');
+Route::get('/delete-user', [SuperAdminController::class, 'deleteUser'])->name('deleteUser');
 Route::middleware('user.type:super-admin')->group(function () {
     Route::prefix('super-admin')->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('superAdminDashboard');
