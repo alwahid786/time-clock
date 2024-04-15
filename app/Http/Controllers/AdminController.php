@@ -15,9 +15,9 @@ class AdminController extends Controller
     public function dashboard()
     {
         $users = User::where('user_type', '!=', 'super-admin')->where(['user_type' => 'user', 'admin_id' => auth()->user()->id])->count();
-        $usersArr = User::where('user_type', '!=', 'super-admin')->where(['user_type' => 'user', 'admin_id' => auth()->user()->id])->get();
+        $usersArr = User::where('user_type', '!=', 'super-admin')->where(['user_type' => 'user', 'admin_id' => auth()->user()->id])->plucl('id')->toArray();
         $admins = User::where('user_type', '!=', 'super-admin')->where(['user_type' => 'user', 'admin_id' => auth()->user()->id])->count();
-        $clocks = Clock::whereDate('created_at', Carbon::today())->wherein('user_id', $usersArr['id'])->with('user')->orderby('created_at', 'DESC')->get();
+        $clocks = Clock::whereDate('created_at', Carbon::today())->wherein('user_id', $usersArr)->with('user')->orderby('created_at', 'DESC')->get();
         return view('admin.dashboard', compact('users', 'admins', 'clocks'));
     }
 
