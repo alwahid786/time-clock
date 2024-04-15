@@ -160,7 +160,7 @@
                     <div class="card p-5 position-relative">
                         <div class="userIcon">
                             <!-- <i class="fas fa-user"></i> -->
-                            <?php $img = env('APP_URL') . $admin['profile_img']; ?>
+                            <?php $img = env('APP_URL') . '/public/' .$admin['profile_img']; ?>
                             <img src="{{$img}}" alt="profile_img">
                         </div>
                         <div class="checkIcon">
