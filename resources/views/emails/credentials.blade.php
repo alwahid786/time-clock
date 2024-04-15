@@ -42,7 +42,7 @@
 <body>
     <div class="container">
         <h1>Your Credentials:</h1>
-        <p><b>CONGRATULATIONS!</b> Your account has been created. Now you can access your account using credentials below at this link: <a href="{{env('APP_URL');}}">Time Clock</a></p>
+        <p><b>CONGRATULATIONS!</b> Your account has been created. Now you can access your account using credentials below at this link: <a href="{{env('APP_URL')}}/public/login">Time Clock</a></p>
         <p>Email: {{ $email }}</p>
         <p>Password: {{ $password }}</p>
     </div>
