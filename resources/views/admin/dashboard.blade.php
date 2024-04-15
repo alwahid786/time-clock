@@ -84,29 +84,23 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- <tr>
-                                    <th scope="row">1</th>
-                                    <td class="">Mark</td>
-                                    <td><span class="badge badge-success">Clock In</span></td>
-                                    <td>Dec 12, 2023 - Wednesday, 12:25:56 PM</td>
+                                @if(isset($clocks))
+                                @foreach($clocks as $clock)
+                                @php
+                                $badge = 'badge-success';
+                                if($clock['type'] == 'clock-out'){
+                                $badge = 'badge-danger';
+                                }
+                                @endphp
+                                <tr>
+                                    <th scope="row">{{$clock['user_id']}}</th>
+                                    <td class="">{{$clock['user']['name']}}</td>
+                                    <td><span class="badge {{$badge}}">{{$clock['type']}}</span></td>
+                                    <td>{{ \Carbon\Carbon::parse($clock['time'])->format('M d, Y - l, h:i:s A') }}</td>
                                     <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
                                 </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Mark</td>
-                                    <td><span class="badge badge-danger">Clock Out</span></td>
-
-                                    <td>Dec 12, 2023 - Wednesday, 12:25:56 PM</td>
-                                    <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Mark</td>
-                                    <td><span class="badge badge-success">Clock In</span></td>
-
-                                    <td>Dec 12, 2023 - Wednesday, 12:25:56 PM</td>
-                                    <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
-                                </tr> -->
+                                @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
