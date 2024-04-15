@@ -159,7 +159,7 @@ class UserController extends Controller
             'admin_id' => $adminId,
             'profile_img' => $profileImg,
         ];
-        // $user = User::create($user);
+        $user = User::create($user);
 
         // Send email
         if (!Mail::to($request->email)->send(new UserCredentials($request->email, $request->password))) {
