@@ -50,7 +50,7 @@
     <div class="container-fluid px-0">
         <div class="bg-blue d-flex justify-content-between align-items-center pr-3" style="padding-left:100px;">
             <h1 class="text-center text-white">Admin Dashboard</h1>
-            <?php $img = env('APP_URL') . auth()->user()->profile_img; ?>
+            <?php $img = env('APP_URL') . '/public/'. auth()->user()->profile_img; ?>
             <img style="width:40px; height:40px; border-radius:50%;border:1px solid white;" src="{{$img}}" alt="">
         </div>
         <div class="container-fluid my-5" style="padding-left: 80px;">
