@@ -97,7 +97,6 @@ class UserController extends Controller
         if (Auth::check()) {
             $email = auth()->user()->email;
         } elseif (Session::get('email') != null) {
-            dd('coming');
             $email = Session::get('email');
         } else {
             return response()->json(['error' => 'You need to login to change your password.'], 500);
