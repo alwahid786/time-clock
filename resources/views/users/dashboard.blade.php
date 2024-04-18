@@ -160,7 +160,7 @@
                     <div class="card p-5 position-relative">
                         <div class="userIcon">
                             <!-- <i class="fas fa-user"></i> -->
-                            <?php $img = env('APP_URL') . '/public/' .$admin['profile_img']; ?>
+                            <?php $img = env('APP_URL') . '/public/' . $admin['profile_img']; ?>
                             <img src="{{$img}}" alt="profile_img">
                         </div>
                         <div class="checkIcon">
@@ -177,11 +177,11 @@
                             </div>
                             <div class="checks px-5 my-3">
                                 @if($clock != null)
-                                <button class="checkinBtn py-1 <?php echo (isset($clock['type']) && $clock['type'] !== 'clock-in' ? '' : 'disabledCheckin'); ?>" onclick="checkinFunction()">Clock In</button>
+                                <button class="checkBtns checkinBtn checkin py-1 <?php echo (isset($clock['type']) && $clock['type'] !== 'clock-in' ? '' : 'disabledCheckin'); ?>" onclick="checkinFunction()">Clock In</button>
                                 @else
-                                <button class="checkinBtn py-1 " onclick="checkinFunction()">Clock In</button>
+                                <button class="checkBtns checkinBtn checkin py-1 " onclick="checkinFunction()">Clock In</button>
                                 @endif
-                                <button class="checkoutBtn py-1 <?php echo (isset($clock['type']) && $clock['type'] !== 'clock-out' ? '' : 'disabledCheckout'); ?>" onclick="checkoutFunction()">Clock Out</button>
+                                <button class="checkBtns checkoutBtn checkout py-1 <?php echo (isset($clock['type']) && $clock['type'] !== 'clock-out' ? '' : 'disabledCheckout'); ?>" onclick="checkoutFunction()">Clock Out</button>
                             </div>
                         </div>
                     </div>
@@ -244,13 +244,17 @@
                     $('.loader-overlay').addClass('d-none');
                     // Handle successful login
                     // Redirect or show success message
+                    logoutUser();
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
                         text: type + " applied successfully!"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.reload();
+                            $(".checkBtns").removeClass('disabledCheckin');
+                            $(".checkBtns").removeClass('disabledCheckout');
+                            $(".checkin").addClass('disabledCheckin');
+                            // window.location.reload();
                         }
                     });
                 },
@@ -289,13 +293,18 @@
                     $('.loader-overlay').addClass('d-none');
                     // Handle successful login
                     // Redirect or show success message
+                    logoutUser();
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
                         text: type + " applied successfully!"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.reload();
+                            $(".checkBtns").removeClass('disabledCheckin');
+                            $(".checkBtns").removeClass('disabledCheckout');
+                            $(".checkout").addClass('disabledCheckout');
+                            // window.location.reload();
                         }
                     });
                 },
@@ -313,6 +322,16 @@
                     });
                 }
             });
+
+
+
+
+        }
+
+        function logoutUser() {
+            setTimeout(() => {
+                window.location.href = `{{route('logout')}}`;
+            }, 300000);
         }
     </script>
 
