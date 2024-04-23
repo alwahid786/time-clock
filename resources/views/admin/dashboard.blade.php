@@ -71,16 +71,17 @@
                     <div class="card p-3">
                         <div class="d-flex justify-content-between align-items-baseline">
                             <h3 style="color: #17a2b8;">Recent Check Logs</h3>
-                            <a href="">View all</a>
+                            <a href="{{route('admin.timeLogs')}}">View all</a>
                         </div>
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">User ID</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Type</th>
+                                    <th scope="col">Date</th>
                                     <th scope="col">Time</th>
-                                    <th scope="col">Action</th>
+                                    <th scope="col">Memo</th>
+                                    <th scope="col" style="border-top-right-radius: 10px;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -93,14 +94,39 @@
                                 }
                                 @endphp
                                 <tr>
-                                    <th scope="row">{{$clock['user_id']}}</th>
-                                    <td class="">{{$clock['user']['name']}}</td>
+                                    <td>{{$clock['user']['name']}}</td>
                                     <td><span class="badge {{$badge}}">{{$clock['type']}}</span></td>
-                                    <td>{{ \Carbon\Carbon::parse($clock['time'])->format('M d, Y - l, h:i:s A') }}</td>
-                                    <td class="d-flex "><button data-toggle="modal" data-target="#checkDetailsModal" class="px-3 bg-primary" style="border: none; border-radius: 5px; color: white">Details</button></td>
+
+                                    <td class="d-flex flex-column">
+                                        <div style="line-height: 0.8;">{{ \Carbon\Carbon::parse($clock['time'])->format('M d, Y') }}</div><small style="color: #17a2b8;">{{ \Carbon\Carbon::parse($clock['time'])->format('l') }}</small>
+                                    </td>
+                                    <td>{{ \Carbon\Carbon::parse($clock['time'])->format('h:i:s A') }}</td>
+                                    <td>
+                                        @if($clock['memo'] != null)
+                                        <div class="d-none getMemo">{{$clock['memo']}}</div>
+                                        <div style="width: 150px; ">
+                                            <span style="line-height: 0.8;display: inline-block; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{$clock['memo']}}</span>
+                                        </div>
+                                        <a style="line-height: 1; font-size: 14px;" class="viewMemo" data-toggle="modal" data-target="#checkDetailsModal" href="javascript:void">View memo</a>
+                                        @else
+                                        <div class="">- -</div>
+                                        @endif
+                                    </td>
+                                    <td class="">
+                                        @if($clock['type'] == 'clock-out')
+                                        @php
+                                        $clockId = $clock['id'];
+                                        @endphp
+                                        <a class="tableIcons deleteIcon" href="{{ route('admin.manualEntries', ['clockId' => $clockId])}}"><i class="fa-solid fa-pencil"></i></a>
+                                        @else
+                                        <div class="">- -</div>
+                                        @endif
+                                    </td>
                                 </tr>
                                 @endforeach
                                 @endif
+
+
                             </tbody>
                         </table>
                     </div>
@@ -113,7 +139,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-body">
-                    <div class="user_img text-center">
+                    <!-- <div class="user_img text-center">
                         <img src="{{asset('assets/images/programmer.png')}}" alt="">
                         <h5 style="color: #17a2b8;"><b>Mervin Holmes</b></h5>
                     </div>
@@ -127,12 +153,46 @@
                         <h6 class="m-0 text-secondary" style="font-weight: 600;">Time</h6>
                         <h5 class="m-0"><b>Wednesday, 12:46:03 PM</b></h5>
                     </div>
-                    <hr class="m-1 mb-3">
-                    <h6 class="m-0 px-3" style="font-weight: 600; color:#17a2b8">Memo:</h6>
-                    <p class="px-3">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquid assumenda maiores alias dolor adipisci quod laborum unde error quia vero exercitationem voluptate, minus aliquam eos, ex quas? Eos, praesentium corporis.</p>
+                    <hr class="m-1 mb-3"> -->
+                    <h6 class="m-0 px-3 mt-3" style="font-weight: 600; color:#17a2b8">Memo:</h6>
+                    <p class="px-3" id="showMemo">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquid assumenda maiores alias dolor adipisci quod laborum unde error quia vero exercitationem voluptate, minus aliquam eos, ex quas? Eos, praesentium corporis.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="FilterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Select Date Range</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="filterForm" action="{{ route('timeLogs') }}" method="POST">
+                        @csrf
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" value="{{ request('name') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate" value="{{ request('startDate') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate" value="{{ request('endDate') }}">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -142,7 +202,14 @@
     <script src="{{asset('assets/js/popper.js')}}"></script>
     <script src="{{asset('assets/js/bootstrap.min.js')}}"></script>
     <script src="{{asset('assets/js/main.js')}}"></script>
-
+    <script>
+        $(document).ready(function() {
+            $(".viewMemo").click(function() {
+                var memo = $(this).parent().find(".getMemo").text();
+                $("#showMemo").text(memo);
+            })
+        });
+    </script>
 
 </body>
 

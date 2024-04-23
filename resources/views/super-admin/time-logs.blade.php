@@ -238,7 +238,6 @@
                     <table class="table" id="timeLogs">
                         <thead>
                             <tr>
-                                <th scope="col" style="border-top-left-radius: 10px;">User ID</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Type</th>
                                 <th scope="col">Date</th>
@@ -257,7 +256,6 @@
                             }
                             @endphp
                             <tr>
-                                <th>{{$clock['user_id']}}</th>
                                 <td>{{$clock['user']['name']}}</td>
                                 <td><span class="badge {{$badge}}">{{$clock['type']}}</span></td>
 
@@ -267,11 +265,11 @@
                                 <td>{{ \Carbon\Carbon::parse($clock['time'])->format('h:i:s A') }}</td>
                                 <td>
                                     @if($clock['memo'] != null)
-                                    <div id="getMemo" class="d-none">{{$clock['memo']}}</div>
+                                    <div class="d-none getMemo">{{$clock['memo']}}</div>
                                     <div style="width: 150px; ">
                                         <span style="line-height: 0.8;display: inline-block; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{$clock['memo']}}</span>
                                     </div>
-                                    <a style="line-height: 1; font-size: 14px;" id="viewMemo" data-toggle="modal" data-target="#checkDetailsModal" href="javascript:void">View memo</a>
+                                    <a style="line-height: 1; font-size: 14px;" class="viewMemo" data-toggle="modal" data-target="#checkDetailsModal" href="javascript:void">View memo</a>
                                     @else
                                     <div class="">- -</div>
                                     @endif
@@ -427,8 +425,8 @@
                 });
             });
             $(document).ready(function() {
-                $("#viewMemo").click(function() {
-                    var memo = $("#getMemo").text();
+                $(".viewMemo").click(function() {
+                    var memo = $(this).parent().find(".getMemo").text();
                     $("#showMemo").text(memo);
                 })
             });

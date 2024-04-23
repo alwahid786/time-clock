@@ -294,7 +294,6 @@
                     <table class="table" id="timeLogs">
                         <thead>
                             <tr>
-                                <th scope="col" style="border-top-left-radius: 10px;">User ID</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Type</th>
                                 <th scope="col">Date</th>
@@ -313,7 +312,6 @@
                             }
                             @endphp
                             <tr>
-                                <th>{{$clock['user_id']}}</th>
                                 <td>{{$clock['user']['name']}}</td>
                                 <td><span class="badge {{$badge}}">{{$clock['type']}}</span></td>
 
