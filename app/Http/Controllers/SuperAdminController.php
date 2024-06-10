@@ -27,17 +27,21 @@ class SuperAdminController extends Controller
     {
 
         $query = Clock::query();
+        $search = [];
         if ($request->has('name') && $request->name != '') {
+            $search['name'] = $request->name;
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('name') . '%');
             });
         }
 
         if ($request->has('startDate') && $request->startDate != '') {
+            $search['startDate'] = $request->startDate;
             $query->whereDate('time', '>=', date($request->startDate));
         }
 
         if ($request->has('endDate') && $request->endDate != '') {
+            $search['endDate'] = $request->endDate;
             $query->whereDate('time', '<=', date($request->endDate));
         }
         $adminType = auth()->user()->user_type;
@@ -48,15 +52,16 @@ class SuperAdminController extends Controller
         }
         $clocks = $query->with('user')->orderBy('created_at', 'DESC')->get();
         // dd($clocks);
-        return view('super-admin.time-logs', compact('clocks', 'users'));
+        return view('super-admin.time-logs', compact('clocks', 'users', 'search'));
     }
 
-    public function manualEntries($clockId)
+    public function manualEntries(Request $request)
     {
-
-        $clock = Clock::find($clockId);
-        $checkIn_clock = Clock::find($clockId-1);
-        return view('super-admin.manual-entry', compact('clock', 'checkIn_clock'));
+        // dd($request->all());
+        $clock = Clock::find($request->clockId);
+        $checkIn_clock = Clock::find($request->clockId - 1);
+        $search = $request->all();
+        return view('super-admin.manual-entry', compact('clock', 'checkIn_clock', 'search'));
     }
 
     public function updateClock(Request $request)

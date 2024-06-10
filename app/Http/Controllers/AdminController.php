@@ -96,20 +96,25 @@ class AdminController extends Controller
     // Get All Time Logs
     public function timeLogs(Request $request)
     {
+        // dd($request->all());
         $adminId = auth()->user()->id;
         $userIds = User::where('admin_id', $adminId)->pluck('id')->toArray();
         $query = Clock::query();
+        $search = [];
         if ($request->has('name') && $request->name != '') {
+            $search['name'] = $request->name;
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('name') . '%');
             });
         }
 
         if ($request->has('startDate') && $request->startDate != '') {
+            $search['startDate'] = $request->startDate;
             $query->whereDate('time', '>=', date($request->startDate));
         }
 
         if ($request->has('endDate') && $request->endDate != '') {
+            $search['endDate'] = $request->endDate;
             $query->whereDate('time', '<=', date($request->endDate));
         }
         $adminType = auth()->user()->user_type;
@@ -119,16 +124,18 @@ class AdminController extends Controller
             $users = User::where('user_type', 'user')->where('admin_id', auth()->user()->id)->get();
         }
         $clocks = $query->wherein('user_id', $userIds)->with('user')->orderBy('created_at', 'DESC')->get();
-        return view('admin.time-logs', compact('clocks', 'users'));
+        return view('admin.time-logs', compact('clocks', 'users', 'search'));
     }
 
-    public function manualEntries($clockId)
+    public function manualEntries(Request $request)
     {
-
-        $clock = Clock::find($clockId);
-        $checkIn_clock = Clock::find($clockId-1);
+        // dd($request->all());
+        $clock = Clock::find($request->clockId);
+        $checkIn_clock = Clock::find($request->clockId - 1);
+        $search = $request->all();
+        // dd($search['name']);
         // dd($clock, $checkIn_clock);
-        return view('admin.manual-entry', compact('clock', 'checkIn_clock'));
+        return view('admin.manual-entry', compact('clock', 'checkIn_clock', 'search'));
     }
 
     public function updateClock(Request $request)

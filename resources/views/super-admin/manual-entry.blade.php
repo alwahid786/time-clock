@@ -346,11 +346,17 @@
                             </div>
 
                             <div class="px-3 mt-5 d-flex align-items-center justify-content-end" style="gap: 5px;">
-                                <a href="{{ redirect()->back()->getTargetUrl() }}">
+                                <a onclick="$('#hiddenForm').submit()">
                                     <button type="button" class="cancel_user_btn"><i class="fa-solid fa-xmark mr-3"></i> Cancel</button>
                                 </a>
                                 <button type="submit" id="submitButton" class="save_user_btn"><i class="fa-solid fa-hourglass-start mr-3 "></i> Save</button>
                             </div>
+                        </form>
+                        <form id="hiddenForm" action="{{ route('timeLogs') }}" method="POST" style="display: none;">
+                            @csrf
+                            <input type="hidden" name="name" value="{{ $search['name'] }}">
+                            <input type="hidden" name="startDate" value="{{ $search['startDate'] }}">
+                            <input type="hidden" name="endDate" value="{{ $search['endDate'] }}">
                         </form>
                     </div>
                 </div>

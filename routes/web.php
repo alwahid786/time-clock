@@ -52,7 +52,7 @@ Route::middleware('user.type:admin')->group(function () {
         Route::get('/all-users', [AdminController::class, 'getAllUsers'])->name('admin.users'); // Get All Users for Admin
         Route::get('/edit-user/{userId}/{type}', [AdminController::class, 'editUser'])->name('admin.editUser'); // Edit User
         Route::any('/time-logs', [AdminController::class, 'timeLogs'])->name('admin.timeLogs');
-        Route::get('/manual-entry/{clockId}', [AdminController::class, 'manualEntries'])->name('admin.manualEntries');
+        Route::post('/manual-entry', [AdminController::class, 'manualEntries'])->name('admin.manualEntries');
         Route::post('/update-clock', [AdminController::class, 'updateClock'])->name('admin.updateClock');
 
         Route::get('/reports', function () {
@@ -73,7 +73,7 @@ Route::middleware('user.type:super-admin')->group(function () {
         Route::get('/all-admins', [SuperAdminController::class, 'getAllAdmins'])->name('adminsList'); // Get All Admins
         Route::get('/edit-user/{userId}/{type}', [SuperAdminController::class, 'editUser'])->name('editUser'); // Edit User
         Route::any('/time-logs', [SuperAdminController::class, 'timeLogs'])->name('timeLogs');
-        Route::get('/manual-entry/{clockId}', [SuperAdminController::class, 'manualEntries'])->name('manualEntries');
+        Route::post('/manual-entry', [SuperAdminController::class, 'manualEntries'])->name('manualEntries');
         Route::post('/update-clock', [SuperAdminController::class, 'updateClock'])->name('updateClock');
 
         Route::get('/reports', function () {

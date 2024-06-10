@@ -279,7 +279,7 @@
                                     @php
                                     $clockId = $clock['id'];
                                     @endphp
-                                    <a class="tableIcons deleteIcon" href="{{ route('manualEntries', ['clockId' => $clockId])}}"><i class="fa-solid fa-pencil"></i></a>
+                                    <a class="tableIcons deleteIcon" onclick="submitForm(event, '{{ $clockId }}')"><i class="fa-solid fa-pencil"></i></a>
                                     @else
                                     <div class="">- -</div>
                                     @endif
@@ -353,6 +353,13 @@
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Search</button>
                         </div>
+                    </form>
+                    <form id="hiddenForm" action="{{ route('manualEntries') }}" method="POST" style="display: none;">
+                        @csrf
+                        <input type="hidden" name="clockId" id="clockId">
+                        <input type="hidden" id="search_name" name="name" value="{{ isset($search['name']) ? $search['name'] : '' }}">
+                        <input type="hidden" id="search_startDate" name="startDate" value="{{ isset($search['startDate']) ? $search['startDate'] : '' }}">
+                        <input type="hidden" id="search_endDate" name="endDate" value="{{ isset($search['endDate']) ? $search['endDate'] : '' }}">
                     </form>
                 </div>
             </div>
@@ -436,6 +443,16 @@
 
 
         });
+
+        function submitForm(event, clockId) {
+            event.preventDefault();
+
+            // Set the hidden input values
+            document.getElementById('clockId').value = clockId;
+            
+            // Submit the form
+            document.getElementById('hiddenForm').submit();
+        }
     </script>
 
 </body>
