@@ -279,12 +279,12 @@
                                     </div>
                                 </div>
                                 <div class="w-50">
-                                    <label class="m-0" for="email">Date</label>
+                                    <label class="m-0" for="checkout_date">Date</label>
                                     <div class="input-group ">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-calendar"></i></span>
                                         </div>
-                                        <input readonly class="form-control" type="text" id="email" value="{{date('M d, Y', strtotime($clock['time']))}}" >
+                                        <input readonly class="form-control" type="text" id="checkout_date" value="{{date('M d, Y', strtotime($clock['time']))}}">
                                     </div>
                                 </div>
                             </div>
@@ -304,8 +304,8 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
                                         </div>
-                                        <input class="form-control" type="text" value="{{$clock['minutes']}}" id="password" name="minutes">
-                                        <input class="form-control" type="hidden" value="{{$clock['id']}}" id="password" name="id">
+                                        <input class="form-control" type="text" value="{{$clock['minutes']}}" id="minutes" name="minutes" onchange="validate_minutes()">
+                                        <input class="form-control" type="hidden" value="{{$clock['id']}}" name="id">
                                     </div>
                                 </div>
                             </div>
@@ -321,8 +321,32 @@
                                 </div>
                             </div>
 
+                            <div class="d-flex justify-content-between align-items-baseline mt-3">
+                                <h4 class="px-3 text-center" style="color: #17a2b8;">Checkin of this Session</h4>
+                            </div>
+                            <div class="d-lg-flex align-items-center justify-content-between px-3" style="gap: 10px;">
+                                <div class="w-50">
+                                    <label class="m-0" for="checkin">Checkin Time</label>
+                                    <div class="input-group ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
+                                        </div>
+                                        <input readonly class="form-control" type="text" value="{{date('h:i a', strtotime($checkIn_clock['time']))}}" id="checkin" >
+                                    </div>
+                                </div>
+                                <div class="w-50">
+                                    <label class="m-0" for="checkin_Date">Date</label>
+                                    <div class="input-group ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
+                                        </div>
+                                        <input readonly class="form-control" type="text" value="{{date('M d, Y', strtotime($checkIn_clock['time']))}}" id="checkin_Date">
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="px-3 mt-5 d-flex align-items-center justify-content-end" style="gap: 5px;">
-                                <a href="{{route('timeLogs')}}">
+                                <a href="{{ redirect()->back()->getTargetUrl() }}">
                                     <button type="button" class="cancel_user_btn"><i class="fa-solid fa-xmark mr-3"></i> Cancel</button>
                                 </a>
                                 <button type="submit" id="submitButton" class="save_user_btn"><i class="fa-solid fa-hourglass-start mr-3 "></i> Save</button>
@@ -508,6 +532,21 @@
         $("#imageUpload").change(function() {
             readURL(this);
         });
+
+        function validate_minutes() {
+            let minutes = $('#minutes').val();
+            if (minutes < 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: "Please Enter Valid Minutes",
+                });
+
+                $('#submitButton').prop('disabled', true);
+            } else {
+                $('#submitButton').prop('disabled', false);
+            }
+        }
     </script>
 
 </body>

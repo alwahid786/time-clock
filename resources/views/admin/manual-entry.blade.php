@@ -279,12 +279,12 @@
                                     </div>
                                 </div>
                                 <div class="w-50">
-                                    <label class="m-0" for="email">Date</label>
+                                    <label class="m-0" for="checkout_date">Date</label>
                                     <div class="input-group ">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-calendar"></i></span>
                                         </div>
-                                        <input readonly class="form-control" type="text" id="email" value="{{date('M d, Y', strtotime($clock['time']))}}" >
+                                        <input readonly class="form-control" type="text" id="checkout_date" value="{{date('M d, Y', strtotime($clock['time']))}}">
                                     </div>
                                 </div>
                             </div>
@@ -304,8 +304,8 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
                                         </div>
-                                        <input class="form-control" type="text" value="{{$clock['minutes']}}" id="password" name="minutes">
-                                        <input class="form-control" type="hidden" value="{{$clock['id']}}" id="password" name="id">
+                                        <input class="form-control" type="text" value="{{$clock['minutes']}}" id="minutes" name="minutes" onchange="validate_minutes()">
+                                        <input class="form-control" type="hidden" value="{{$clock['id']}}" name="id">
                                     </div>
                                 </div>
                             </div>
@@ -321,8 +321,33 @@
                                 </div>
                             </div>
 
+                            <div class="d-flex justify-content-between align-items-baseline mt-3">
+                                <h4 class="px-3 text-center" style="color: #17a2b8;">Checkin of this Session</h4>
+                            </div>
+                            <div class="d-lg-flex align-items-center justify-content-between px-3" style="gap: 10px;">
+                                <div class="w-50">
+                                    <label class="m-0" for="checkin">Checkin Time</label>
+                                    <div class="input-group ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
+                                        </div>
+                                        <input readonly class="form-control" type="text" value="{{date('h:i a', strtotime($checkIn_clock['time']))}}" id="checkin" >
+                                    </div>
+                                </div>
+                                <div class="w-50">
+                                    <label class="m-0" for="checkin_Date">Date</label>
+                                    <div class="input-group ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
+                                        </div>
+                                        <input readonly class="form-control" type="text" value="{{date('M d, Y', strtotime($checkIn_clock['time']))}}" id="checkin_Date">
+                                    </div>
+                                </div>
+                            </div>
+
+                            
                             <div class="px-3 mt-5 d-flex align-items-center justify-content-end" style="gap: 5px;">
-                                <a href="{{route('admin.timeLogs')}}">
+                                <a href="{{ redirect()->back()->getTargetUrl() }}">
                                     <button type="button" class="cancel_user_btn"><i class="fa-solid fa-xmark mr-3"></i> Cancel</button>
                                 </a>
                                 <button type="submit" id="submitButton" class="save_user_btn"><i class="fa-solid fa-hourglass-start mr-3 "></i> Save</button>
@@ -358,142 +383,6 @@
     </script>
     @endif
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('file').addEventListener('change', function() {
-                setTimeout(function() {
-                    document.getElementById('importForm').submit();
-                }, 100); // Add a small delay (e.g., 100 milliseconds) to ensure the file is fully selected
-            });
-
-            const loginForm = document.getElementById('addUserForm');
-            const submitButton = document.getElementById('submitButton');
-
-            submitButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                const email = loginForm.querySelector('input[name="email"]').value;
-                const first_name = loginForm.querySelector('input[name="first_name"]').value;
-                const last_name = loginForm.querySelector('input[name="last_name"]').value;
-                const phone = loginForm.querySelector('input[name="phone"]').value;
-                const password = loginForm.querySelector('input[name="password"]').value;
-                const password_confirmation = loginForm.querySelector('input[name="password_confirmation"]').value;
-                const user_type = loginForm.querySelector('select[name="user_type"]').value;
-
-                if (first_name == '') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'First Name Error',
-                        text: 'First Name is required',
-                    });
-                    return;
-                } else if (last_name == '') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Last Name Error',
-                        text: 'Last Name is required',
-                    });
-                    return;
-                } else if (email == '') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Email Error',
-                        text: 'Email is required',
-                    });
-                    return;
-                } else if (phone == '') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Phone Error',
-                        text: 'Phone is required',
-                    });
-                    return;
-                } else if (password == '') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Password Error',
-                        text: 'Password is required',
-                    });
-                    return;
-                } else if (password_confirmation == '') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Password Confirmation Error',
-                        text: 'Password Confirmation is required',
-                    });
-                    return;
-                } else if (password != password_confirmation) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Password Confirmation Error',
-                        text: 'Password Confirmation does not match Password',
-                    });
-                    return;
-                }
-                $('.loader-overlay').removeClass('d-none');
-
-                // var data = {
-                //     first_name: first_name,
-                //     last_name: last_name,
-                //     email: email,
-                //     phone: phone,
-                //     password: password,
-                //     password_confirmation: password_confirmation,
-                //     user_type: user_type,
-                // }
-                // if (user_type === "admin") {
-                //     data.img = user_type;
-                // }
-                var data = new FormData();
-                data.append('first_name', first_name);
-                data.append('last_name', last_name);
-                data.append('email', email);
-                data.append('phone', phone);
-                data.append('password', password);
-                data.append('password_confirmation', password_confirmation);
-                data.append('user_type', user_type);
-                if (user_type === "admin") {
-                    data.append('img', $('#imageUpload')[0].files[0]);
-                }
-                // Send AJAX request
-                $.ajax({
-                    url: `{{url('/add-user')}}`,
-                    type: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: data,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        $('.loader-overlay').addClass('d-none');
-                        // Handle successful login
-                        // Redirect or show success message
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: 'Successfully registered ' + user_type + '! An email has been sent with credentials to ' + email,
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = `{{route('superAdminUsers')}}`
-                            }
-                        });
-                    },
-                    error: function(xhr) {
-                        $('.loader-overlay').addClass('d-none');
-                        // Handle login errors
-                        let errorMessage = 'Something is wrong.';
-                        if (xhr.responseJSON && xhr.responseJSON.errors) {
-                            errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
-                        }
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            html: errorMessage
-                        });
-                    }
-                });
-            });
-        });
-
         function readURL(input) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
@@ -508,6 +397,21 @@
         $("#imageUpload").change(function() {
             readURL(this);
         });
+
+        function validate_minutes() {
+            let minutes = $('#minutes').val();
+            if (minutes < 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: "Please Enter Valid Minutes",
+                });
+
+                $('#submitButton').prop('disabled', true);
+            } else {
+                $('#submitButton').prop('disabled', false);
+            }
+        }
     </script>
 
 </body>

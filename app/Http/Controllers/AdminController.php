@@ -126,34 +126,45 @@ class AdminController extends Controller
     {
 
         $clock = Clock::find($clockId);
-        return view('admin.manual-entry', compact('clock'));
+        $checkIn_clock = Clock::find($clockId-1);
+        // dd($clock, $checkIn_clock);
+        return view('admin.manual-entry', compact('clock', 'checkIn_clock'));
     }
 
     public function updateClock(Request $request)
     {
+        // dd($request->all());
         $clock = Clock::find($request->id);
+        if($request->has('memo') && $request->memo != null){
+            $clock->memo = $request->memo;
+        }
+        $lastcheckIn = Clock::find($request->id-1);
         if ($clock->minutes != $request->minutes) {
-            if ($clock->minutes > $request->minutes) {
-                // deduction in time made
-                $diff = $clock->minutes - $request->minutes;
-                $newTime = Carbon::parse($clock->time)->subMinutes($diff);
-                $clock->time = $newTime;
-                $clock->minutes = $request->minutes;
-            } else if ($clock->minutes < $request->minutes) {
-                // addition in time made
-                $diff =  $request->minutes - $clock->minutes;
-                $newTime = Carbon::parse($clock->time)->addMinutes($diff);
-                $clock->time = $newTime;
-                $clock->minutes = $request->minutes;
+            // if ($clock->minutes > $request->minutes) {
+            //     // deduction in time made
+            //     $diff = $clock->minutes - $request->minutes;
+            //     $newTime = Carbon::parse($clock->time)->subMinutes($diff);
+            //     $clock->time = $newTime;
+            //     $clock->minutes = $request->minutes;
+            // } else if ($clock->minutes < $request->minutes) {
+            //     // addition in time made
+            //     $diff =  $request->minutes - $clock->minutes;
+            //     $newTime = Carbon::parse($clock->time)->addMinutes($diff);
+            //     $clock->time = $newTime;
+            //     $clock->minutes = $request->minutes;
+            // }
+            if ($request->minutes < 0) {
+                return redirect()->back()->with('error', 'Minutes cannot be negative');
             }
-            if($request->has('memo') && $request->memo != null){
-                $clock->memo = $request->memo;
-            }
-            $res = $clock->save();
-            if ($res) {
-                return redirect()->route('admin.timeLogs');
+            else {
+                $clock->minutes = $request->minutes;
+                $clock->time = Carbon::parse($lastcheckIn->time)->addMinutes($request->minutes);
             }
         }
-        return redirect()->route('admin.timeLogs');
+        $res = $clock->save();
+        if ($res) {
+            return redirect()->route('admin.timeLogs');
+        }
+        return redirect()->back()->with('error', 'Something went wrong');
     }
 }
