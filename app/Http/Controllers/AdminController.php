@@ -174,4 +174,14 @@ class AdminController extends Controller
         }
         return redirect()->back()->with('error', 'Something went wrong');
     }
+
+    public function pendingRequests()
+    {
+        $requests = Clock::where('user_id', auth()->id())
+            ->where('is_approved', false)
+            ->get();
+
+        return view('admin.pending-requests', compact('requests'));
+    }
+ 
 }

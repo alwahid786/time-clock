@@ -182,6 +182,12 @@
             </a>
         </li>
         <li>
+            <a href="{{route('admin.pendingRequest')}}">
+                <span class="icon"><i class="fas fa-clock"></i></span>
+                <span class="title">Pending Requests</span>
+            </a>
+        </li>
+        <li>
             <a href="{{route('admin.timeLogs')}}">
                 <span class="icon"><i class="fas fa-clock"></i></span>
                 <span class="title">Time Logs</span>

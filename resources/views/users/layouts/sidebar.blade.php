@@ -176,6 +176,18 @@
             </a>
         </li>
         <li>
+            <a href="{{route('user.timeLogs')}}">
+                <span class="icon"><i class="fas fa-user"></i></span>
+                <span class="title">Users</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{route('user.pendingRequest')}}">
+                <span class="icon"><i class="fas fa-user"></i></span>
+                <span class="title">Pending Requests</span>
+            </a>
+        </li>
+        <li>
             <a href="{{route('user.changePassword')}}" class="">
                 <span class="icon"><i class="fas fa-key"></i></span>
                 <span class="title">Change Password</span>

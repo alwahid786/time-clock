@@ -200,6 +200,87 @@ class UserController extends Controller
             return response()->json("Time was not updated! Something went wrong", 500);
         }
     }
+
+    public function timeLogs(Request $request)
+    {
+        $user_id = $request->input('user_id', auth()->id());
+        $startDate = $request->input('start_date', null);
+        $endDate = $request->input('end_date', null);
+
+        $query = Clock::join('users', 'clocks.user_id', '=', 'users.id')
+            ->select('clocks.*', 'users.name as user_name')
+            ->where('clocks.user_id', $user_id);
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('clocks.time', [$startDate, $endDate]);
+        }
+
+        $clocks = $query->get();
+
+        return view('users.activitesdetails', ['clocks' => $clocks]);
+    }
+
+    public function manualEntries($id)
+    {
+        $clock = Clock::findOrFail($id);
+        $checkIn_clock = Clock::where('user_id', $clock->user_id)
+            ->where('time', '<', $clock->time)
+            ->orderBy('time', 'desc')
+            ->first();
+
+        $search = [
+            'id' => $clock->id,
+            'minutes' => $clock->minutes,
+            'memo' => $clock->memo,
+            'checkInTime' => $checkIn_clock ? $checkIn_clock->time : null,
+            'checkInDate' => $checkIn_clock ? date('M d, Y', strtotime($checkIn_clock->time)) : null,
+            'is_approved' => $clock->is_approved,
+            'approved_by' => $clock->approved_by,
+            'approval_notes' => $clock->approval_notes,
+        ];
+
+        return view('users.manual-entry', compact('clock', 'checkIn_clock', 'search'));
+    }
+
+    public function updateClock(Request $request)
+    {
+        $clock = Clock::findOrFail($request->id);
+    
+        if ($clock->is_approved === 2) {
+            return redirect()->back()->with('error', 'This request has already been approved.');
+        }
+    
+        if ($request->has('memo') && $request->memo !== null) {
+            $clock->memo = $request->memo;
+        }
+    
+        if ($request->minutes !== null) {
+            if ($request->minutes < 0) {
+                return redirect()->back()->with('error', 'Minutes cannot be negative');
+            } else {
+                $clock->pending_minutes = $request->minutes;
+            }
+        }
+    
+        
+        $clock->is_approved = 1;
+        $clock->save();
+    
+        return redirect()->route('user.pendingRequest')->with('success', 'Request submitted for approval.');
+    }
+    
+
+
+    public function pendingRequests()
+    {
+
+        $requests = Clock::where('user_id', auth()->id())
+            ->where('is_approved', false)
+            ->get();
+
+        return view('users.pendingrequests', compact('requests'));
+    }
+
     public function userDashboard()
     {
         $clock = Clock::where('user_id', auth()->user()->id)->orderBy('created_at', 'DESC')->first();
