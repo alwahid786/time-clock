@@ -52,9 +52,9 @@ Route::middleware('user.type:admin')->group(function () {
         Route::get('/all-users', [AdminController::class, 'getAllUsers'])->name('admin.users'); // Get All Users for Admin
         Route::get('/edit-user/{userId}/{type}', [AdminController::class, 'editUser'])->name('admin.editUser'); // Edit User
         Route::any('/time-logs', [AdminController::class, 'timeLogs'])->name('admin.timeLogs');
-        Route::post('/manual-entry', [AdminController::class, 'manualEntries'])->name('admin.manualEntries');
+        Route::get('/manual-entries/{id}', [AdminController::class, 'manualEntries'])->name('admin.manualEntries');
+        Route::post('/manual-entries/{id}', [AdminController::class, 'manualEntries'])->name('admin.manualEntries');   
         Route::post('/update-clock', [AdminController::class, 'updateClock'])->name('admin.updateClock');
-        
         Route::get('/admin/pending-requests', [AdminController::class, 'pendingRequests'])->name('admin.pendingRequest');
         Route::get('/admin/approve-request/{id}', [AdminController::class, 'approveRequest'])->name('admin.approveRequest');
         Route::get('/admin/reject-request/{id}', [AdminController::class, 'rejectRequest'])->name('admin.rejectRequest');
@@ -80,9 +80,10 @@ Route::middleware('user.type:super-admin')->group(function () {
         Route::get('/all-admins', [SuperAdminController::class, 'getAllAdmins'])->name('adminsList'); // Get All Admins
         Route::get('/edit-user/{userId}/{type}', [SuperAdminController::class, 'editUser'])->name('editUser'); // Edit User
         Route::any('/time-logs', [SuperAdminController::class, 'timeLogs'])->name('timeLogs');
-        Route::post('/manual-entry', [SuperAdminController::class, 'manualEntries'])->name('manualEntries');
-        Route::post('/update-clock', [SuperAdminController::class, 'updateClock'])->name('updateClock');
-        Route::get('data', [SuperAdminController::class, 'data'])->name('super-admin.data');
+        Route::get('/manual-entries/{id}', [SuperAdminController::class, 'manualEntries'])->name('super-admin.manualEntries');
+        Route::post('/manual-entries/{id}', [SuperAdminController::class, 'manualEntries'])->name('super-admin.manualEntries');
+        Route::post('/update-clock', [SuperAdminController::class, 'updateClock'])->name('super-admin.updateClock');
+        // Route::get('data', [SuperAdminController::class, 'data'])->name('super-admin.data');
         Route::get('/super-admin/pending-requests', [SuperAdminController::class, 'pendingRequests'])->name('super-admin.pendingRequest');
         Route::get('/super-admin/approve-request/{id}', [SuperAdminController::class, 'approveRequest'])->name('super-admin.approveRequest');
         Route::get('/super-admin/reject-request/{id}', [SuperAdminController::class, 'rejectRequest'])->name('super-admin.rejectRequest');       
@@ -94,7 +95,7 @@ Route::middleware('user.type:super-admin')->group(function () {
         })->name('addNewUser');
     });
 });
-
+   
 //   user routes
 Route::middleware('user.type:user')->group(function () {
     Route::prefix('user')->group(function () {

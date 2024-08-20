@@ -254,13 +254,12 @@
     <div class="loader-overlay d-none">
         <img src="{{asset('assets/images/loader.gif')}}" alt="">
     </div>
-    @include('admin.layouts.sidebar')
+    @include('users.layouts.sidebar')
     <div class="container-fluid px-0">
         <div class="bg-blue" style="height: 60px;">
             <h1 class="text-center text-white">Add Manual Entry </h1>
-        </div>
+        </div>  
 
-        
         <div class="container my-5">
             <div class="card p-3">
                 <div class="row">
@@ -365,10 +364,8 @@
             </div>
         </div>
 
-
-
+        
     </div>
-
     <script src="{{asset('assets/js/jquery.min.js')}}"></script>
     <script src="{{asset('assets/js/popper.js')}}"></script>
     <script src="{{asset('assets/js/bootstrap.min.js')}}"></script>

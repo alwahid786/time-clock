@@ -165,7 +165,6 @@
         }
     </style>
 </head>
-
 <body>
     @include('users.layouts.sidebar')
     <div class="container-fluid px-0">
@@ -182,119 +181,70 @@
     </div>
     <div class="container-fluid mt-3 mb-5" style="padding-left: 80px;">
         <div class="row">
-        </div>
-        <div class="row">
             <div class="col-12 mt-4">
-                <div class="card p-3">  
-                            <h4 class="px-3 text-center" style="color: #17a2b8;">Your Pending Requests</h4>
-                    
-                            <!-- Check for success or error messages -->
-                            @if (session('success'))
-                                <div class="alert alert-success">
-                                    {{ session('success') }}
-                                </div>
-                            @elseif(session('error'))
-                                <div class="alert alert-danger">
-                                    {{ session('error') }}
-                                </div>
-                            @endif
-                    
-                            <!-- Table for pending requests -->
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Date</th>
-                                        <th>Total Minutes</th>
-                                        <th>Memo</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($requests as $request)
-                                        <tr>
-                                            <td>{{ $request->id }}</td>
-                                            <td>{{ date('M d, Y', strtotime($request->time)) }}</td>
-                                            <td>{{ $request->minutes }}</td>
-                                            <td>{{ $request->memo }}</td>
-                                            <td>
-                                                @if ($request->status == 'pending')
-                                                    <span class="text-warning">Pending</span>
-                                                @elseif($request->status == 'approved')
-                                                    <span class="text-success">Approved</span>
-                                                @elseif($request->status == 'rejected')
-                                                    <span class="text-danger">Rejected</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center">No pending requests</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-    
-                    
+                <div class="card p-3">
+                    <h4 class="px-3 text-center" style="color: #17a2b8;">Your Pending Requests</h4>
 
+                    <!-- Check for success or error messages -->
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @elseif(session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Name</th>
+                                <th>Date</th>
+                                <th>Total Minutes</th>
+                                <th>Memo</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($requests as $request)
+                                <tr>
+                                    <td>{{ $request->id }}</td>
+                                    <td>{{ $request->user->name }}</td>
+                                    <td>{{ date('M d, Y', strtotime($request->time)) }}</td>
+                                    <td>{{ $request->minutes }}</td>
+                                    <td>{{ $request->memo }}</td>
+                                    <td>
+                                        @if ($request->status == 'pending')
+                                            <span class="bg-warning text-white  rounded-pill p-2">Pending</span>
+                                        @elseif($request->status == 'approved')
+                                            <span class="bg-success text-white rounded-pill p-2">Approved</span>
+                                        @elseif($request->status == 'rejected')
+                                            <span class="bg-danger text-white  rounded-pill p-2">Rejected</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">No requests found</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-
-    
-    {{-- <!-- Modal -->
-    <div class="modal fade" id="FilterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Filter</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('admin.users') }}" method="GET">
-                        @csrf
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" name="name" id="name"
-                                placeholder="Enter name" value="{{ request('name') }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="email"
-                                placeholder="Enter email" value="{{ request('email') }}">
-                        </div>
-                        {{-- <div class="form-group">
-                            <label for="startDate">Start Date</label>
-                            <input type="date" class="form-control" id="startDate">
-                        </div>
-                        <div class="form-group">
-                            <label for="endDate">End Date</label>
-                            <input type="date" class="form-control" id="endDate">
-                        </div> --}}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </div>
-                </form>
-            </div>
-        </div>
+    </div>
+    {{-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Search</button>
     </div> --}}
-
-
+    </form>
+    </div>
+    </div>
+    </div> --}}
     @include('layouts.footer')
-
     <script>
         $(document).ready(function() {
             $('.tabSection a').click(function() {
@@ -303,7 +253,6 @@
             });
             new DataTable('#example');
             $("#dt-search-0").attr('placeholder', 'Search here')
-
         });
     </script>
 </body>

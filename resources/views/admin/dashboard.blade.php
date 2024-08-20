@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Super Admin Dashboard</title>
+    <title>Admin Dashboard</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
@@ -117,7 +117,7 @@
                                         @php
                                         $clockId = $clock['id'];
                                         @endphp
-                                        <a class="tableIcons deleteIcon" href="{{ route('admin.manualEntries', ['clockId' => $clockId])}}"><i class="fa-solid fa-pencil"></i></a>
+                                      <a class="tableIcons deleteIcon" href="{{ route('admin.manualEntries', ['id' => $clockId]) }}"><i class="fa-solid fa-pencil"></i></a>
                                         @else
                                         <div class="">- -</div>
                                         @endif

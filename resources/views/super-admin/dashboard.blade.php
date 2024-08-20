@@ -122,7 +122,7 @@
                                         @php
                                         $clockId = $clock['id'];
                                         @endphp
-                                        <a class="tableIcons deleteIcon" href="{{ route('manualEntries', ['clockId' => $clockId])}}"><i class="fa-solid fa-pencil"></i></a>
+                                        <a class="tableIcons deleteIcon" href="{{ route('super-admin.manualEntries', ['id' => $clockId]) }}"><i class="fa-solid fa-pencil"></i></a>
                                         @else
                                         <div class="">- -</div>
                                         @endif

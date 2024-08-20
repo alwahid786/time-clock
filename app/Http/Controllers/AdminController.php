@@ -127,61 +127,100 @@ class AdminController extends Controller
         return view('admin.time-logs', compact('clocks', 'users', 'search'));
     }
 
-    public function manualEntries(Request $request)
+    public function manualEntries($id)
     {
-        // dd($request->all());
-        $clock = Clock::find($request->clockId);
-        $checkIn_clock = Clock::find($request->clockId - 1);
-        $search = $request->all();
-        // dd($search['name']);
-        // dd($clock, $checkIn_clock);
+        $clock = Clock::findOrFail($id);
+        $checkIn_clock = Clock::where('user_id', $clock->user_id)
+            ->where('time', '<', $clock->time)
+            ->orderBy('time', 'desc')
+            ->first();
+    
+        $search = [
+            'id' => $clock->id,
+            'minutes' => $clock->minutes,
+            'memo' => $clock->memo,
+            'checkInTime' => $checkIn_clock ? $checkIn_clock->time : null,
+            'checkInDate' => $checkIn_clock ? date('M d, Y', strtotime($checkIn_clock->time)) : null,
+            'is_approved' => $clock->is_approved,
+            'approved_by' => $clock->approved_by,
+            'approval_notes' => $clock->approval_notes,
+        ];
         return view('admin.manual-entry', compact('clock', 'checkIn_clock', 'search'));
-    }
-
+    }    
+    
     public function updateClock(Request $request)
     {
-        // dd($request->all());
-        $clock = Clock::find($request->id);
-        if($request->has('memo') && $request->memo != null){
-            $clock->memo = $request->memo;
-        }
-        $lastcheckIn = Clock::find($request->id-1);
-        if ($clock->minutes != $request->minutes) {
-            // if ($clock->minutes > $request->minutes) {
-            //     // deduction in time made
-            //     $diff = $clock->minutes - $request->minutes;
-            //     $newTime = Carbon::parse($clock->time)->subMinutes($diff);
-            //     $clock->time = $newTime;
-            //     $clock->minutes = $request->minutes;
-            // } else if ($clock->minutes < $request->minutes) {
-            //     // addition in time made
-            //     $diff =  $request->minutes - $clock->minutes;
-            //     $newTime = Carbon::parse($clock->time)->addMinutes($diff);
-            //     $clock->time = $newTime;
-            //     $clock->minutes = $request->minutes;
-            // }
+        $clock = Clock::findOrFail($request->id);
+        
+        if ($request->minutes !== null) {
             if ($request->minutes < 0) {
                 return redirect()->back()->with('error', 'Minutes cannot be negative');
             }
-            else {
-                $clock->minutes = $request->minutes;
-                $clock->time = Carbon::parse($lastcheckIn->time)->addMinutes($request->minutes);
+            $checkIn_clock = Clock::where('user_id', $clock->user_id)
+                ->where('time', '<', $clock->time)
+                ->orderBy('time', 'desc')
+                ->first();
+    
+            if ($checkIn_clock) {
+                $checkInTime = new \DateTime($checkIn_clock->time);
+                $newClockOutTime = clone $checkInTime;
+                $newClockOutTime->modify('+' . $request->minutes . ' minutes');
+                $clock->time = $newClockOutTime->format('Y-m-d H:i:s');
             }
+            $clock->minutes = $request->minutes;
         }
-        $res = $clock->save();
-        if ($res) {
-            return redirect()->route('admin.timeLogs');
+        if ($request->has('memo') && $request->memo !== null) {
+            $clock->memo = $request->memo;
         }
-        return redirect()->back()->with('error', 'Something went wrong');
+        $clock->save();
+        return redirect()->route('admin.manualEntries', ['id' => $clock->id])->with('success', 'Clock entry updated successfully.');
+        // return view('admin.manual-entry');
     }
 
     public function pendingRequests()
     {
-        $requests = Clock::where('user_id', auth()->id())
-            ->where('is_approved', false)
+        $adminId = auth()->user()->id;
+    
+        $requests = Clock::where('is_approved', 1)
+            ->where('type', 'clock-out')
+            ->join('users', 'clocks.user_id', '=', 'users.id')
+            ->where('users.admin_id', $adminId)
+            ->select('clocks.*', 'users.name as user_name')
             ->get();
-
+    
         return view('admin.pending-requests', compact('requests'));
     }
- 
+    
+    public function approveRequest($id)
+    {
+        $clock = Clock::findOrFail($id);
+        $currentMinutes = is_numeric($clock->minutes) ? (float) $clock->minutes : 0;
+        $pendingMinutes = is_numeric($clock->pending_minutes) ? (float) $clock->pending_minutes : 0;
+
+        if ($clock->is_approved === 1) {
+            $clock->minutes = $currentMinutes + $pendingMinutes;
+            $clock->pending_minutes = 0;
+            $clock->is_approved = 2;
+            $clock->status = 'approved';
+            $clock->approved_by = auth()->id();
+            $clock->save();
+            return redirect()->route('admin.pendingRequest')->with('success', 'Request approved successfully.');
+        }
+
+        return redirect()->route('admin.pendingRequest')->with('error', 'Request cannot be approved.');
+    }
+
+    public function rejectRequest($id)
+    {
+        $clock = Clock::findOrFail($id);
+
+        if ($clock->is_approved === 1) {
+            $clock->is_approved = 0;
+            $clock->status = 'rejected';
+            $clock->approved_by = auth()->id();
+            $clock->save();
+            return redirect()->route('admin.pendingRequest')->with('success', 'Request rejected successfully.');
+        }
+        return redirect()->route('admin.pendingRequest')->with('error', 'Request cannot be rejected.');
+    }
 }

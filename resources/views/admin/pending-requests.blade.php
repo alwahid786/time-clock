@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>All Users</title>
+    <title>Admin </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     @include('layouts.header')
@@ -167,10 +167,10 @@
 </head>
 
 <body>
-    @include('super-admin.layouts.sidebar')
+    @include('admin.layouts.sidebar')
     <div class="container-fluid px-0">
         <div class="bg-blue position-relative" style="height: 60px;padding-left: 80px;">
-            <h1 class="text-center text-white" style="position: absolute;">Super Admin</h1>
+            <h1 class="text-center text-white" style="position: absolute;">Admin</h1>
             <div class="d-flex align-items-center ml-auto mr-3" style="height: 60px; width:25%;">
                 <div class="search_bar w-100" data-toggle="modal" data-target="#FilterModal">
                     <div>Search By Filters</div>
@@ -183,21 +183,6 @@
         </div>
     </div>
     <div class="container-fluid mt-3 mb-5" style="padding-left: 80px;">
-        <div class="row">
-            <div class="col-12 d-flex align-items-center justify-content-between">
-                <div class="tabSection">
-                    <a class="active" href="{{ route('superAdminUsers') }}">
-                        Users
-                    </a>
-                    <a href="{{ route('adminsList') }}">
-                        Admins
-                    </a>
-                </div>
-                <a href="{{ route('addNewUser', ['type' => 'user']) }}">
-                    <button class="add_user_btn"><i class="fa-solid fa-user-plus mr-3"></i> Add New User</button>
-                </a>
-            </div>
-        </div>
         <div class="row">
             <div class="col-12 mt-4">
                 <div class="card p-3">
@@ -248,44 +233,6 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
-    <div class="modal fade" id="FilterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Filter</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('superAdminUsers') }}" method="GET">
-                        @csrf
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" name="name" id="name"
-                                placeholder="Enter name" value="{{ request('name') }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="startDate">Start Date</label>
-                            <input type="date" class="form-control" id="startDate" name="startDate">
-                        </div>
-                        <div class="form-group">
-                            <label for="endDate">End Date</label>
-                            <input type="date" class="form-control" id="endDate" name="endDate">
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
     @include('layouts.footer')
 
     <script>

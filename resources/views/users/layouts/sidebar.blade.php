@@ -183,8 +183,8 @@
         </li>
         <li>
             <a href="{{route('user.pendingRequest')}}">
-                <span class="icon"><i class="fas fa-user"></i></span>
-                <span class="title">Pending Requests</span>
+                <span class="icon"><i class="fas fa-clock"></i></span>
+                <span class="title">Time Log Requests</span>
             </a>
         </li>
         <li>
