@@ -242,53 +242,64 @@ class UserController extends Controller
         return view('users.manual-entry', compact('clock', 'checkIn_clock', 'search'));
     }
 
-   public function updateClock(Request $request)
-{
-    $clock = Clock::findOrFail($request->id);
+    public function updateClock(Request $request)
+    {
+        $clock = Clock::findOrFail($request->id);
 
-    if ($clock->is_approved === 2) {
-        return redirect()->back()->with('error', 'This request has already been approved.');
-    }
-
-    // Validate the input minutes
-    if ($request->minutes !== null) {
-        if ($request->minutes < 0) {
+        if ($clock->is_approved === 2) {
+            return redirect()->back()->with('error', 'This request has already been approved.');
+        }
+    
+        $existingMinutes = $clock->minutes;
+        $updatedMinutes = $request->minutes;
+    
+        if ($updatedMinutes < 0) {
             return redirect()->back()->with('error', 'Minutes cannot be negative');
         }
 
-        // Get the current check-in time
-        $checkIn_clock = Clock::where('user_id', $clock->user_id)
-            ->where('time', '<', $clock->time)
-            ->orderBy('time', 'desc')
-            ->first();
-
-        if ($checkIn_clock) {
-            // Calculate the new clock-out time based on updated minutes
-            $checkInTime = new \DateTime($checkIn_clock->time);
-            $newClockOutTime = clone $checkInTime;
-            $newClockOutTime->modify('+' . $request->minutes . ' minutes');
-            $clock->time = $newClockOutTime->format('Y-m-d H:i:s');
-            $clock->pending_minutes = $request->minutes;
+        $clock->pending_minutes = $updatedMinutes;
+    
+        if ($updatedMinutes !== null && $existingMinutes !== $updatedMinutes) {
+            $checkInClock = Clock::where('user_id', $clock->user_id)
+                ->where('type', 'clock-in')
+                ->where('time', '<', $clock->time)
+                ->orderBy('time', 'desc')
+                ->first();
+    
+            if ($checkInClock) {
+                $checkInTime = new \DateTime($checkInClock->time);
+                $currentClockOutTime = new \DateTime($clock->time);
+                $interval = $checkInTime->diff($currentClockOutTime);
+                $newClockOutTime = $checkInTime->add($interval);
+                $differenceInMinutes = $updatedMinutes - $existingMinutes;
+                $newClockOutTime->modify("+{$differenceInMinutes} minutes");
+                $clock->pending_time = $newClockOutTime->format('Y-m-d H:i:s');
+            }
         }
-    }
-    if ($request->has('memo') && $request->memo !== null) {
-        $clock->memo = $request->memo;
-    }
-    $clock->is_approved = 1;
-    $clock->save();
 
-    return redirect()->route('user.pendingRequest')->with('success', 'Request submitted for approval.');
-}
+        if ($request->has('memo') && $request->memo !== null) {
+            $clock->pending_memo = $request->memo;
+        }
+
+        $clock->is_approved = 1;
+        $clock->save();
+    
+        return redirect()->route('user.pendingRequest')->with('success', 'Request submitted for approval.');
+    }
+    
+    
     
     public function pendingRequests()
 {
     $requests = Clock::where('user_id', auth()->id())
-        ->where('type', 'clock-out')
+        ->whereIn('is_approved', [0, 1, 2]) 
+        ->where('type', 'clock-out') 
         ->get();
 
     return view('users.pendingrequests', compact('requests'));
 }
-    
+
+
     public function userDashboard()
     {
         $clock = Clock::where('user_id', auth()->user()->id)->orderBy('created_at', 'DESC')->first();

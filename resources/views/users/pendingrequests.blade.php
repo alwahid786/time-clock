@@ -183,7 +183,7 @@
         <div class="row">
             <div class="col-12 mt-4">
                 <div class="card p-3">
-                    <h4 class="px-3 text-center" style="color: #17a2b8;">Your Pending Requests</h4>
+                    <h4 class="px-3 text-center" style="color: #17a2b8;">Your Requests</h4>
 
                     <!-- Check for success or error messages -->
                     @if (session('success'))

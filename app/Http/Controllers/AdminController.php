@@ -196,20 +196,35 @@ class AdminController extends Controller
         $clock = Clock::findOrFail($id);
         $currentMinutes = is_numeric($clock->minutes) ? (float) $clock->minutes : 0;
         $pendingMinutes = is_numeric($clock->pending_minutes) ? (float) $clock->pending_minutes : 0;
-
         if ($clock->is_approved === 1) {
             $clock->minutes = $currentMinutes + $pendingMinutes;
             $clock->pending_minutes = 0;
+            if ($pendingMinutes > 0) {
+                $checkInClock = Clock::where('user_id', $clock->user_id)
+                    ->where('type', 'clock-in')
+                    ->where('time', '<', $clock->time)
+                    ->orderBy('time', 'desc')
+                    ->first();
+                if ($checkInClock) {
+                    $checkInTime = new \DateTime($checkInClock->time);
+                    $currentClockOutTime = new \DateTime($clock->time);
+                    $interval = $checkInTime->diff($currentClockOutTime);
+                    $newClockOutTime = $checkInTime->add($interval);
+                    $newClockOutTime->modify("+{$pendingMinutes} minutes");
+                    $clock->time = $newClockOutTime->format('Y-m-d H:i:s');
+                }
+            }
             $clock->is_approved = 2;
             $clock->status = 'approved';
             $clock->approved_by = auth()->id();
             $clock->save();
+    
             return redirect()->route('admin.pendingRequest')->with('success', 'Request approved successfully.');
         }
-
+    
         return redirect()->route('admin.pendingRequest')->with('error', 'Request cannot be approved.');
     }
-
+    
     public function rejectRequest($id)
     {
         $clock = Clock::findOrFail($id);
