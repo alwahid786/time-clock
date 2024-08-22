@@ -286,7 +286,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
                                         </div>
-                                        <input class="form-control" type="text" value="{{ $clock->minutes }}" id="minutes" name="minutes" onchange="validate_minutes()">
+                                        <input readonly class="form-control" type="text" value="{{ $clock->minutes }}" id="minutes" name="minutes" onchange="validate_minutes()">
                                         <input class="form-control" type="hidden" value="{{ $clock->id }}" name="id">
                                     </div>
                                 </div>
@@ -299,7 +299,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
                                         </div>
-                                        <input readonly class="form-control" type="text" value="{{ $clock->time ? date('h:i a', strtotime($clock->time)) : '-' }}" id="clock_out">
+                                        <input class="form-control" type="text" value="{{ $clock->time ? date('h:i a', strtotime($clock->time)) : '-' }}" id="clock_out">
                                     </div>
                                 </div>
                                 <div class="w-50">

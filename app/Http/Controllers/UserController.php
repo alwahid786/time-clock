@@ -192,8 +192,8 @@ class UserController extends Controller
         if ($request->memo != '' || $request->memo != null) {
             $clock->memo = $request->memo;
         }
-        // $clock->status = '';
         $clock->time = $now;
+        $clock->status = '';
         $success = $clock->save();
         if ($success) {
             return response()->json("Clock Time Updated Successfully!", 201);
@@ -250,54 +250,49 @@ class UserController extends Controller
         if ($clock->is_approved === 2) {
             return redirect()->back()->with('error', 'This request has already been approved.');
         }
-    
-        $existingMinutes = $clock->minutes;
-        $updatedMinutes = $request->minutes;
-    
-        if ($updatedMinutes < 0) {
-            return redirect()->back()->with('error', 'Minutes cannot be negative');
-        }
 
-        $clock->pending_minutes = $updatedMinutes;
-    
-        if ($updatedMinutes !== null && $existingMinutes !== $updatedMinutes) {
+        $clock->status = 'pending';
+
+        if ($request->has('clock_out') && !empty($request->clock_out)) {
+            $clockOutTime = new \DateTime($request->clock_out);
+
+            // Find the check-in time for the same session
             $checkInClock = Clock::where('user_id', $clock->user_id)
                 ->where('type', 'clock-in')
-                ->where('time', '<', $clock->time)
+                ->where('time', '<', $clockOutTime->format('Y-m-d H:i:s'))
                 ->orderBy('time', 'desc')
                 ->first();
-    
+
             if ($checkInClock) {
                 $checkInTime = new \DateTime($checkInClock->time);
-                $currentClockOutTime = new \DateTime($clock->time);
-                $interval = $checkInTime->diff($currentClockOutTime);
-                $newClockOutTime = $checkInTime->add($interval);
-                $differenceInMinutes = $updatedMinutes - $existingMinutes;
-                $newClockOutTime->modify("+{$differenceInMinutes} minutes");
-                $clock->pending_time = $newClockOutTime->format('Y-m-d H:i:s');
+                $interval = $checkInTime->diff($clockOutTime);
+                $calculatedMinutes = ($interval->h * 60) + $interval->i;
+                $clock->pending_time = $clockOutTime->format('Y-m-d H:i:s');
+                $clock->pending_minutes = $calculatedMinutes;
+            } else {
+                return redirect()->back()->with('error', 'No matching check-in record found.');
             }
+        } else {
+            return redirect()->back()->with('error', 'Clock-out time cannot be empty.');
         }
-
-        if ($request->has('memo') && $request->memo !== null) {
+        if ($request->has('memo') && !empty($request->memo)) {
             $clock->pending_memo = $request->memo;
         }
-
         $clock->is_approved = 1;
-        $clock->status = 'pending';
         $clock->save();
-    
+
         return redirect()->route('user.pendingRequest')->with('success', 'Request submitted for approval.');
     }
-        
-    public function pendingRequests()
-{
-    $requests = Clock::where('user_id', auth()->id())
-        ->whereIn('is_approved', [0, 1, 2]) 
-        ->where('type', 'clock-out') 
-        ->get();
 
-    return view('users.pendingrequests', compact('requests'));
-}
+    public function pendingRequests()
+    {
+        $requests = Clock::where('user_id', auth()->id())
+            ->whereIn('is_approved', [0, 1, 2])
+            ->where('type', 'clock-out')
+            ->get();
+
+        return view('users.pendingrequests', compact('requests'));
+    }
 
     public function userDashboard()
     {
