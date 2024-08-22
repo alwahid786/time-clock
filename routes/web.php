@@ -55,9 +55,9 @@ Route::middleware('user.type:admin')->group(function () {
         Route::get('/manual-entries/{id}', [AdminController::class, 'manualEntries'])->name('admin.manualEntries');
         Route::post('/manual-entries/{id}', [AdminController::class, 'manualEntries'])->name('admin.manualEntries');   
         Route::post('/update-clock', [AdminController::class, 'updateClock'])->name('admin.updateClock');
-        Route::get('/admin/pending-requests', [AdminController::class, 'pendingRequests'])->name('admin.pendingRequest');
-        Route::get('/admin/approve-request/{id}', [AdminController::class, 'approveRequest'])->name('admin.approveRequest');
-        Route::get('/admin/reject-request/{id}', [AdminController::class, 'rejectRequest'])->name('admin.rejectRequest');
+        Route::get('/pending-requests', [AdminController::class, 'pendingRequests'])->name('admin.pendingRequest');
+        Route::get('/approve-request/{id}', [AdminController::class, 'approveRequest'])->name('admin.approveRequest');
+        Route::get('/reject-request/{id}', [AdminController::class, 'rejectRequest'])->name('admin.rejectRequest');
        
         Route::get('/reports', function () {
             return view('admin.reports');

@@ -76,35 +76,41 @@ class SuperAdminController extends Controller
         return view('super-admin.manual-entry', compact('clock', 'checkIn_clock', 'search'));
     }
 
-    public function updateClock(Request $request)
-    {
-        $clock = Clock::findOrFail($request->id);
 
-        if ($request->minutes !== null) {
-            if ($request->minutes < 0) {
-                return redirect()->back()->with('error', 'Minutes cannot be negative');
-            }
-            $checkIn_clock = Clock::where('user_id', $clock->user_id)
-                ->where('time', '<', $clock->time)
-                ->orderBy('time', 'desc')
-                ->first();
-    
-            if ($checkIn_clock) {
-                $checkInTime = new \DateTime($checkIn_clock->time);
-                $newClockOutTime = clone $checkInTime;
-                $newClockOutTime->modify('+' . $request->minutes . ' minutes');
-                $clock->time = $newClockOutTime->format('Y-m-d H:i:s');
-            }
-            $clock->minutes = $request->minutes;
-        }
-        if ($request->has('memo') && $request->memo !== null) {
-            $clock->memo = $request->memo;
-        }
+  public function updateClock(Request $request)
+{
+    $clock = Clock::findOrFail($request->id);
 
-        $clock->save();
-        return redirect()->route('super-admin.manualEntries', ['id' => $clock->id])->with('success', 'Clock entry updated successfully.');
+    if ($request->has('clock_out') && !empty($request->clock_out)) {
+        $clockOutTime = new \DateTime($request->clock_out);
+
+        $checkInClock = Clock::where('user_id', $clock->user_id)
+            ->where('type', 'clock-in')
+            ->where('time', '<', $clockOutTime->format('Y-m-d H:i:s'))
+            ->orderBy('time', 'desc')
+            ->first();
+
+        if ($checkInClock) {
+            $checkInTime = new \DateTime($checkInClock->time);
+            $interval = $checkInTime->diff($clockOutTime);
+            $calculatedMinutes = ($interval->h * 60) + $interval->i;
+            $clock->time = $clockOutTime->format('Y-m-d H:i:s'); 
+            $clock->minutes = $calculatedMinutes; 
+        } else {
+            return redirect()->back()->with('error', 'No matching check-in record found.');
+        }
+    } else {
+        return redirect()->back()->with('error', 'Clock-out time cannot be empty.');
     }
-    
+
+    if ($request->has('memo') && !empty($request->memo)) {
+        $clock->memo = $request->memo; 
+    }
+
+    $clock->save();
+    return redirect()->route('super-admin.manualEntries', ['id' => $clock->id])->with('success', 'Clock updated successfully.');
+}
+
     public function generateReport(Request $request)
     {
         $query = Clock::query();

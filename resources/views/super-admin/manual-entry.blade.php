@@ -299,7 +299,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-clock"></i></span>
                                         </div>
-                                        <input class="form-control" type="text" value="{{ $clock->time ? date('h:i a', strtotime($clock->time)) : '-' }}" id="clock_out">
+                                        <input class="form-control" type="text" value="{{ $clock->time ? date('h:i a', strtotime($clock->time)) : '-' }}" id="clock_out" name="clock_out">
                                     </div>
                                 </div>
                                 <div class="w-50">
@@ -320,7 +320,7 @@
                                     <textarea class="px-3 py-2 memoText" style="color:gray;width: 100%; border:1px solid lightgray; border-radius:5px;" name="memo" id="memo" rows="5">{{ $clock->memo }}</textarea>
                                 </div>
                             </div>
-                    
+                        
                             <!-- Checkin Information -->
                             <div class="d-flex justify-content-between align-items-baseline mt-3">
                                 <h4 class="px-3 text-center" style="color: #17a2b8;">Checkin of this Session</h4>
@@ -345,13 +345,13 @@
                                     </div>
                                 </div>
                             </div>
-                    
+                        
                             <!-- Submit and Cancel Buttons -->
                             <div class="px-3 mt-5 d-flex align-items-center justify-content-end" style="gap: 5px;">
                                 <a href="{{ url()->previous() }}" class="btn btn-secondary"><i class="fa-solid fa-xmark mr-3"></i> Cancel</a>
                                 <button type="submit" id="submitButton" class="btn btn-primary"><i class="fa-solid fa-hourglass-start mr-3"></i> Save</button>
                             </div>
-                        </form>
+                        </form>                        
 
                         {{-- <form id="hiddenForm" action="{{ route('user.timeLogs') }}" method="POST" style="display: none;">
                             @csrf

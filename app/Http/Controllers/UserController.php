@@ -246,7 +246,6 @@ class UserController extends Controller
     public function updateClock(Request $request)
     {
         $clock = Clock::findOrFail($request->id);
-
         if ($clock->is_approved === 2) {
             return redirect()->back()->with('error', 'This request has already been approved.');
         }
