@@ -192,6 +192,7 @@ class UserController extends Controller
         if ($request->memo != '' || $request->memo != null) {
             $clock->memo = $request->memo;
         }
+        // $clock->status = '';
         $clock->time = $now;
         $success = $clock->save();
         if ($success) {
@@ -282,13 +283,12 @@ class UserController extends Controller
         }
 
         $clock->is_approved = 1;
+        $clock->status = 'pending';
         $clock->save();
     
         return redirect()->route('user.pendingRequest')->with('success', 'Request submitted for approval.');
     }
-    
-    
-    
+        
     public function pendingRequests()
 {
     $requests = Clock::where('user_id', auth()->id())
@@ -298,7 +298,6 @@ class UserController extends Controller
 
     return view('users.pendingrequests', compact('requests'));
 }
-
 
     public function userDashboard()
     {

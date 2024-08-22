@@ -276,19 +276,16 @@
                                 </td>
                                 <td class="">
                                     @if($clock['type'] == 'clock-out')
-                                    @php
-                                    $clockId = $clock['id'];
-                                    @endphp
-                                    <a class="tableIcons deleteIcon" onclick="submitForm(event, '{{ $clockId }}')"><i class="fa-solid fa-pencil"></i></a>
+                                        <a href="{{ route('super-admin.manualEntries', ['id' => $clock['id']]) }}" class="tableIcons deleteIcon">
+                                            <i class="fa-solid fa-pencil"></i>
+                                        </a>
                                     @else
-                                    <div class="">- -</div>
+                                        <div class="">- -</div>
                                     @endif
-                                </td>
+                                </td>   
                             </tr>
                             @endforeach
                             @endif
-
-
                         </tbody>
                     </table>
                 </div>
