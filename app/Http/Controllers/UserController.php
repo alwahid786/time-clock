@@ -286,7 +286,7 @@ class UserController extends Controller
     public function pendingRequests()
     {
         $requests = Clock::where('user_id', auth()->id())
-            ->whereIn('is_approved', [0, 1, 2])
+            ->whereIn('is_approved', [1, 2, 3])
             ->where('type', 'clock-out')
             ->get();
 

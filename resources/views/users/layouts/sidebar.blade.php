@@ -177,14 +177,14 @@
         </li>
         <li>
             <a href="{{route('user.timeLogs')}}">
-                <span class="icon"><i class="fas fa-user"></i></span>
-                <span class="title">Users</span>
+                <span class="icon"><i class="fas fa-clock"></i></span>
+                <span class="title">Time CLocks</span>
             </a>
         </li>
         <li>
             <a href="{{route('user.pendingRequest')}}">
                 <span class="icon"><i class="fas fa-clock"></i></span>
-                <span class="title">Time Log Requests</span>
+                <span class="title">Time CLocks Status</span>
             </a>
         </li>
         <li>

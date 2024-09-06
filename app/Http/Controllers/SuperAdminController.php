@@ -364,7 +364,7 @@ class SuperAdminController extends Controller
         $clock = Clock::findOrFail($id);
 
         if ($clock->is_approved === 1) {
-            $clock->is_approved = 0;
+            $clock->is_approved = 3;
             $clock->status = 'rejected';
             $clock->approved_by = auth()->id();
             $clock->save();
